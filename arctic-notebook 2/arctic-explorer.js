@@ -9,6 +9,12 @@ const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 const windowYears = 20;
 const lowIceThreshold = 1; // million km²
 
+// Keep the same area-to-color mapping for every pathway and time window.
+const iceColor = d3.scaleLinear()
+  .domain([0, 4, 8, 12, 16])
+  .range(["#bd2129", "#ff987c", "#ffffff", "#a4dfff", "#49a9ec"])
+  .clamp(true);
+
 function drawEmissionsChart() {
   const svg = d3.select("#emissions");
   const yearScale = d3.scaleLinear([2015, 2100], [45, 640]);
@@ -55,8 +61,8 @@ function drawIceCalendar(start, end) {
 
     const areas = months.map((_, index) => averages.get(pathway.id).get(index + 1));
     row.selectAll("td").data(areas).join("td")
-      .style("background", area => d3.interpolateBlues(Math.min(area / 16, 1)))
-      .style("color", area => area > 9 ? "white" : "#112a40")
+      .style("background", area => iceColor(area))
+      .style("color", area => area < 1.65 ? "white" : "#080c10")
       .attr("title", area => area.toFixed(3) + " million km²")
       .text(area => area.toFixed(1) + (area < lowIceThreshold ? " ●" : ""));
     row.append("td").text(areas.filter(area => area < lowIceThreshold).length);
