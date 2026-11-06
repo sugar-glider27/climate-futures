@@ -5,7 +5,8 @@ const pages = [
   ["ice-floes.html", "September ice floes"],
   ["temperature.html", "Global temperatures"],
   ["warming-map.html", "Warming map"],
-  ["sea-levels.html", "Sea levels rising"]
+  ["sea-levels.html", "Sea levels rising"],
+  ["global-temperature.html", "Global Temperature"]
 ];
 
 const nav = document.querySelector("nav");
