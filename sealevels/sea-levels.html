@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sea level explorer</title>
+  <link rel="stylesheet" href="../site.css">
+
+  <style>
+    :root { --fg: #1d2b36; --muted: #62707c; --water: #1971c2; }
+    body { margin: 0; padding: 10px 14px; background: #fff; color: var(--fg);
+      font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    header, #chart { max-width: 900px; }
+    header { margin-bottom: 4px; text-align: center; }
+    h1 { font-size: 21px; font-weight: 650; margin: 0; color: #185ca9; }
+    p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+    #scenarios { margin-top: 14px; }
+    button { font: inherit; font-size: 13px; padding: 4px 11px; margin-left: -1px;
+      border: 1px solid rgba(98, 112, 124, 0.16); background: #fff; color: var(--fg); cursor: pointer; }
+    button:first-child { border-radius: 6px 0 0 6px; margin-left: 0; }
+    button:last-child { border-radius: 0 6px 6px 0; }
+    button.active { background: var(--water); border-color: var(--water); color: #fff; }
+    button:focus-visible { outline: 2px solid var(--water); outline-offset: 1px; }
+    svg { display: block; width: 100%; height: auto; user-select: none; }
+    .tick { cursor: pointer; }
+    .tick text { font-size: 14px; }
+    .tip { opacity: 0; pointer-events: none; }
+    .tick:hover .tip { opacity: 1; }
+    .tip circle { fill: #fff; stroke: var(--water); stroke-width: 2.5; }
+    .tip rect { fill: #fff; stroke: #000; }
+    .tip text { fill: var(--fg); font-weight: 650; text-anchor: middle; }
+  </style>
+</head>
+
+<body>
+  <nav aria-label="Visualizations"></nav>
+
+  <header>
+    <h1>Sea Levels Are Rising. But How Much Higher Will Our Oceans Go?</h1>
+    <p>Take a look at how thermosteric sea levels have been rising due to rising temperatures from 2015 to 2100.</p>
+    <p><strong>Instructions:</strong> Drag the interactive red line up or down to see increasing projected sea levels. Sea level changes start from −5.8 m.</p>
+    <p>Flip through each scenario tab and explore how low to high greenhouse gas emissions affect sea level changes.</p>
+    <div id="scenarios" role="group" aria-label="Sea Levels scenario"></div>
+  </header>
+
+  <div id="chart"></div>
+
+  <script src="../d3.min.js"></script>
+  <script src="../navigation.js"></script>
+  <script src="sea-levels.js"></script>
+</body>
+</html>
