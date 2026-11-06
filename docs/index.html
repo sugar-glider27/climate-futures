@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arctic ice calendar</title>
+  <style>
+    body { font: 15px system-ui; color: #172e42; margin: 12px; }
+    h2 { font-size: 20px; margin: 12px 0 4px; }
+    p { margin: 4px 0; }
+    svg { width: 100%; max-height: 220px; }
+    table { width: 100%; border-spacing: 3px; font-size: 13px; }
+    td { text-align: center; border-radius: 3px; height: 35px; }
+    th { text-align: left; }
+    input { width: 45%; vertical-align: middle; }
+    .ice-key { display: inline-block; width: 7em; height: 0.7em; margin: 0 0.35em;
+      border-radius: 2px; background: linear-gradient(to right, #449bec, #74bcff 25%, #e56c60 75%, #c32424); }
+  </style>
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <nav aria-label="Visualizations"></nav>
+  <script src="navigation.js"></script>
+  <main>
+  <h1>Arctic ice calendar</h1>
+  <h2>Global CO₂ emissions</h2>
+  <p>Billions of tonnes per year · shaded band shows selected period</p>
+  <svg id="emissions" viewBox="0 0 740 205"></svg>
+  <label>20-year window
+    <input id="start-year" type="range" min="2015" max="2081" value="2081">
+    <strong id="period"></strong>
+  </label>
+  <h2>Monthly sea-ice area</h2>
+  <p>Monthly mean area in million km². 16 (more ice)<span class="ice-key" aria-hidden="true"></span>0 (less ice). ● = below 1 million km².</p>
+  <div class="calendar-scroll"><table id="calendar"><thead><tr></tr></thead><tbody></tbody></table></div>
+  </main>
+  <script src="d3.min.js"></script>
+  <script src="climate-data.js"></script>
+  <script src="arctic-explorer.js"></script>
+</body>
+</html>
