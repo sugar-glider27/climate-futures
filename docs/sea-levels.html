@@ -8,12 +8,15 @@
 
   <style>
     :root { --fg: #1d2b36; --muted: #62707c; --water: #1971c2; }
-    body { margin: 0; padding: 10px 14px; background: #fff; color: var(--fg);
-      font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
-    header, #chart { max-width: 900px; }
+    body {
+      --fg: #183a49;
+      --muted: #62707c;
+      --water: #1971c2;
+    }
+    header, #chart { max-width: 900px; margin-left: auto; margin-right: auto; }
     header { margin-bottom: 4px; text-align: center; }
-    h1 { font-size: 21px; font-weight: 650; margin: 0; color: #185ca9; }
-    p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+    /* h1 { font-size: 21px; font-weight: 650; margin: 0; color: #185ca9; } */
+    /* p { margin: 2px 0 0; color: var(--muted); font-size: 13px; } */
     #scenarios { margin-top: 14px; }
     button { font: inherit; font-size: 13px; padding: 4px 11px; margin-left: -1px;
       border: 1px solid rgba(98, 112, 124, 0.16); background: #fff; color: var(--fg); cursor: pointer; }
@@ -29,6 +32,22 @@
     .tip circle { fill: #fff; stroke: var(--water); stroke-width: 2.5; }
     .tip rect { fill: #fff; stroke: #000; }
     .tip text { fill: var(--fg); font-weight: 650; text-anchor: middle; }
+
+    #chart svg {
+      font-family: inherit;
+    }
+
+    #chart svg text {
+      font-family: inherit;
+    }
+
+    #chart .tick text {
+      font-size: 14px;
+    }
+
+    #chart .axis-title {
+      font-size: 22px;
+    }
   </style>
 </head>
 

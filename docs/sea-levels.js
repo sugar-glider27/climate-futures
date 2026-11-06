@@ -41,11 +41,12 @@ const bands = plot.append("g").attr("clip-path", "url(#water-clip)")
   .attr("y", (_, i) => innerH - (i + 1) * bandH);
 
 plot.append("text")
+  .attr("class", "axis-title")
   .attr("transform", "rotate(-90)")
   .attr("x", -innerH / 2).attr("y", -115)
-  .attr("text-anchor", "middle").attr("font-size", 22)
+  .attr("text-anchor", "middle")
   .text("Sea Level Changes (in m)");
-
+  
 const yAxis = plot.append("g").attr("transform", `translate(${axisX},0)`);
 const axisLine = color => plot.append("line").attr("x1", axisX).attr("x2", axisX).attr("stroke", color);
 const axisTop = axisLine("#000");
