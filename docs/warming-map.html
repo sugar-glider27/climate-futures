@@ -9,21 +9,34 @@
   <link rel="stylesheet" href="site.css">
 
   <style>
-    body {
-      margin: 0;
-      padding: 35px;
-      font-family: system-ui, sans-serif;
-      background: white;
-      color: #333;
+    * {
+      box-sizing: border-box;
     }
 
-    main {
-      max-width: 1050px;
-      margin: auto;
+    
+body {
+  font-family: system-ui, sans-serif;
+  background: white;
+  color: #333;
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+
+    .page-container {
+  width: 100%;
+}
+    /* Shared navigation */
+    .page-container nav[aria-label="Visualizations"] {
+      width: 100%;
+      max-width: none;
+      margin: 0 0 25px;
     }
 
     h1 {
       color: #963d45;
+      margin-bottom: 8px;
     }
 
     p {
@@ -39,8 +52,11 @@
       cursor: pointer;
     }
 
+    /* World map */
     #map {
+      display: block;
       width: 100%;
+      height: auto;
       background: #f3f6f9;
       border-radius: 10px;
     }
@@ -88,6 +104,7 @@
       );
     }
 
+    /* Zero label above gradient */
     .temperature-legend .zero-label {
       position: absolute;
       top: 0;
@@ -106,6 +123,7 @@
       margin: 2px auto 0;
     }
 
+    /* Legend endpoint labels */
     .temperature-legend .legend-endpoints {
       position: relative;
       width: 100%;
@@ -140,105 +158,111 @@
       font-size: 13px;
       z-index: 10;
     }
-
-    /* Shared navigation */
-    nav[aria-label="Visualizations"] {
-      max-width: 1050px;
-      margin: 0 auto 25px;
-    }
   </style>
 </head>
 
 <body>
 
-  <!-- Shared website navigation -->
-  <nav aria-label="Visualizations"></nav>
-  <script src="navigation.js"></script>
+  <!-- Centered page container -->
+  <div class="page-container">
 
-  <main>
+    <!-- Shared website navigation -->
+    <nav aria-label="Visualizations"></nav>
+    <script src="navigation.js"></script>
 
-    <h1>Where Is the World Warming Fastest?</h1>
+    <main>
 
-    <p>
-      Explore how global warming varies geographically
-      under different greenhouse gas emissions scenarios
-      from 2015 to 2100.
-    </p>
+      <h1>Where Is the World Warming Fastest?</h1>
 
-    <p>
-      Each colored region represents a grid cell from the
-      CMIP6 climate model. Darker red colors indicate greater
-      warming, while blue indicates cooling relative to the
-      2015–2024 baseline. Hover over the map to explore
-      individual values.
-    </p>
+      <p>
+        Explore how global warming varies geographically
+        under different greenhouse gas emissions scenarios
+        from 2015 to 2100.
+      </p>
 
-    <!-- Scenario selector -->
-    <label for="scenario">
-      <b>Climate scenario:</b>
-    </label>
+      <p>
+        Each colored region represents a grid cell from the
+        CMIP6 climate model. Darker red colors indicate greater
+        warming, while blue indicates cooling relative to the
+        2015–2024 baseline. Hover over the map to explore
+        individual values.
+      </p>
 
-    <select id="scenario">
-      <option value="ssp126" selected>SSP1-2.6 (Low)</option>
-  <option value="ssp245">SSP2-4.5 (Intermediate)</option>
-  <option value="ssp585">SSP5-8.5 (Very High)</option>
-    </select>
+      <!-- Scenario selector -->
+      <label for="scenario">
+        <b>Climate scenario:</b>
+      </label>
 
-    <!-- Interactive world map -->
-    <h2 id="map-title">Projected Warming</h2>
+      <select id="scenario">
+        <option value="ssp126" selected>
+          SSP1-2.6 (Low)
+        </option>
+        <option value="ssp245">
+          SSP2-4.5 (Intermediate)
+        </option>
+        <option value="ssp585">
+          SSP5-8.5 (Very High)
+        </option>
+      </select>
 
-    <svg id="map" viewBox="0 0 960 480"></svg>
+      <!-- Interactive world map -->
+      <h2 id="map-title">Projected Warming</h2>
 
-    <!-- Year slider -->
-    <div class="slider-container">
-  <label for="year-slider">
-    Year: <strong id="year-label">2015</strong>
-  </label>
+      <svg id="map" viewBox="0 0 960 480"></svg>
 
-  <div>
-    <input
-      id="year-slider"
-      type="range"
-      min="2015"
-      max="2100"
-      value="2015"
-      step="1"
-    >
+      <!-- Year slider -->
+      <div class="slider-container">
+        <label for="year-slider">
+          Year: <strong id="year-label">2015</strong>
+        </label>
+
+        <div>
+          <input
+            id="year-slider"
+            type="range"
+            min="2015"
+            max="2100"
+            value="2015"
+            step="1"
+          >
+        </div>
+
+        <div class="slider-labels">
+          <span>2015</span>
+          <span>2100</span>
+        </div>
+      </div>
+
+      <!-- Temperature legend -->
+      <p>
+        <b>Projected warming relative to 2015–2024 (°C)</b>
+      </p>
+
+      <div class="temperature-legend">
+
+        <div class="zero-label">0°C</div>
+
+        <div class="legend"></div>
+
+        <div class="legend-endpoints">
+          <span>−1°C or less</span>
+          <span>6°C+</span>
+        </div>
+
+      </div>
+
+      <!-- Data source -->
+      <p style="margin-top: 22px;">
+        Source: CMIP6, CNRM-CM6-1 climate model.
+        Changes are relative to the model's 2015–2024
+        average at each geographic location.
+        These are projections, not weather forecasts.
+        The color scale is capped at −1°C and +6°C.
+      </p>
+
+    </main>
+
   </div>
-</div>
-
-      <div class="slider-labels">
-        <span>2015</span>
-        <span>2100</span>
-      </div>
-    </div>
-
-    <!-- Temperature legend -->
-    <p>
-      <b>Projected warming relative to 2015–2024 (°C)</b>
-    </p>
-
-    <div class="temperature-legend">
-      <div class="zero-label">0°C</div>
-
-      <div class="legend"></div>
-
-      <div class="legend-endpoints">
-        <span>−1°C or less</span>
-        <span>6°C+</span>
-      </div>
-    </div>
-
-    <!-- Data source -->
-    <p style="margin-top: 22px;">
-      Source: CMIP6, CNRM-CM6-1 climate model.
-      Changes are relative to the model's 2015–2024
-      average at each geographic location.
-      These are projections, not weather forecasts.
-      The color scale is capped at −1°C and +6°C.
-    </p>
-
-  </main>
 
   <!-- Hover tooltip -->
   <div id="tooltip" class="tooltip"></div>
