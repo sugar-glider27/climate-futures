@@ -5,14 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>How Hot Could Our Future Get?</title>
+
+  <link rel="stylesheet" href="site.css">
+
   <style>
     body {
-      font-family: system-ui, sans-serif;
-      background: #fffaf8;
-      color: #333;
-      margin: 0;
-      padding: 35px;
-    }
+  font-family: system-ui, sans-serif;
+  background: white;
+  color: #333;
+  margin: 0;
+  padding: 35px;
+}
 
     main {
       max-width: 1050px;
@@ -74,67 +77,85 @@
       font-size: 12px;
       margin-top: 5px;
     }
+
+    /* Shared navigation */
+    nav[aria-label="Visualizations"] {
+      max-width: 1050px;
+      margin: 0 auto 25px;
+    }
   </style>
 </head>
 
 <body>
-<main>
-  <h1>How Hot Could Our Future Get?</h1>
 
-  <p>
-    Explore projected global monthly temperatures from
-    2015 to 2100 under different greenhouse gas
-    emissions scenarios.
-  </p>
+  <!-- Shared navigation tabs -->
+  <nav aria-label="Visualizations"></nav>
+  <script src="navigation.js"></script>
 
-  <p>
-    Each thermometer represents one month. Its fill
-    height and color indicate the projected global
-    average temperature in degrees Celsius.
-  </p>
+  <main>
+    <h1>How Hot Could Our Future Get?</h1>
 
-  <div class="controls">
-    <label for="scenario">
-      Climate scenario:
-    </label>
-    <select id="scenario">
-      <option value="ssp126">SSP1-2.6 (Low)</option>
-      <option value="ssp245">SSP2-4.5 (Intermediate)</option>
-      <option value="ssp585" selected>SSP5-8.5 (Very High)</option>
-    </select>
-  </div>
+    <p>
+      Explore projected global monthly temperatures from
+      2015 to 2100 under different greenhouse gas
+      emissions scenarios.
+    </p>
 
-  <h2 id="chart-title"></h2>
+    <p>
+      Each thermometer represents one month. Its fill
+      height and color indicate the projected global
+      average temperature in degrees Celsius.
+    </p>
 
-  <svg id="chart" viewBox="0 0 1000 335"></svg>
-
-  <div class="slider-container">
-    <label for="year-slider">
-      Year: <strong id="year-label">2067</strong>
-    </label>
-    <div>
-      <input id="year-slider" type="range"
-             min="2015" max="2100"
-             value="2067" step="1">
+    <div class="controls">
+      <label for="scenario">
+        Climate scenario:
+      </label>
+      <select id="scenario">
+        <option value="ssp126" selected>SSP1-2.6 (Low)</option>
+  <option value="ssp245">SSP2-4.5 (Intermediate)</option>
+  <option value="ssp585">SSP5-8.5 (Very High)</option>
+      </select>
     </div>
+
+    <h2 id="chart-title"></h2>
+
+    <svg id="chart" viewBox="0 0 1000 335"></svg>
+
+    <div class="slider-container">
+  <label for="year-slider">
+    Year: <strong id="year-label">2015</strong>
+  </label>
+
+  <div>
+    <input
+      id="year-slider"
+      type="range"
+      min="2015"
+      max="2100"
+      value="2015"
+      step="1"
+    >
   </div>
+</div>
 
-  <p><strong>Temperature color scale (°C)</strong></p>
-  <div class="legend"></div>
-  <div class="legend-labels">
-    <span>10°C (Lower)</span>
-    <span>23°C (Higher)</span>
-  </div>
+    <p><strong>Temperature color scale (°C)</strong></p>
 
-  <p>
-    Source: CMIP6, CNRM-CM6-1 model.
-    Values are projected monthly global average
-    near-surface air temperatures, not local weather
-    forecasts. Colors do not indicate danger thresholds.
-  </p>
-</main>
+    <div class="legend"></div>
+    <div class="legend-labels">
+      <span>10°C (Lower)</span>
+      <span>23°C (Higher)</span>
+    </div>
 
-<script src="d3.min.js"></script>
-<script src="temperature.js"></script>
+    <p>
+      Source: CMIP6, CNRM-CM6-1 model.
+      Values are projected monthly global average
+      near-surface air temperatures, not local weather
+      forecasts. Colors do not indicate danger thresholds.
+    </p>
+  </main>
+
+  <script src="d3.min.js"></script>
+  <script src="temperature.js"></script>
 </body>
 </html>
