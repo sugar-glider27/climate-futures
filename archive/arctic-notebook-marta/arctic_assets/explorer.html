@@ -1,0 +1,35 @@
+<meta charset="utf-8"><style>
+body{font:15px system-ui;color:#172e42;margin:12px}h2{font-size:20px;margin:12px 0 4px}p{margin:4px 0}svg{width:100%;max-height:220px}table{width:100%;border-spacing:3px;font-size:13px}td{text-align:center;border-radius:3px;height:35px}th{text-align:left}input{width:45%;vertical-align:middle}small{color:#395166}
+</style><script>/*D3_LIBRARY*/</script>
+<h2>Global CO₂ emissions</h2><p>Billions of tonnes per year · shaded band shows selected period</p><svg viewBox="0 0 740 205"></svg>
+<label>20-year window <input type="range" min="2015" max="2081" value="2081"> <b id="period"></b></label>
+<h2>Arctic ice calendar</h2><p>Monthly mean area in million km². Darker blue = more ice. ● = below 1 million km².</p><table></table>
+<script>
+const ice=ICE_DATA, emissions=EMISSIONS_DATA;
+const paths=['ssp126','ssp245','ssp585'], names=['SSP1-2.6','SSP2-4.5','SSP5-8.5'], colors=['#007a60','#7752a1','#ac491d'];
+const svg=d3.select('svg'), x=d3.scaleLinear([2015,2100],[45,640]), y=d3.scaleLinear([-15,135],[172,12]);
+const band=svg.append('rect').attr('y',10).attr('height',162).attr('fill','#e3edf3');
+svg.append('g').attr('transform','translate(0,172)').call(d3.axisBottom(x).ticks(7).tickFormat(d3.format('d')));
+svg.append('g').attr('transform','translate(45,0)').call(d3.axisLeft(y).ticks(5));
+svg.append('line').attr('x1',45).attr('x2',640).attr('y1',y(0)).attr('y2',y(0)).attr('stroke','#999');
+paths.forEach((p,i)=>{
+ const rows=emissions.filter(d=>d.scenario===p);
+ svg.append('path').datum(rows).attr('d',d3.line().x(d=>x(d.year)).y(d=>y(d.gt_co2))).attr('stroke',colors[i]).attr('stroke-width',3).attr('fill','none');
+ svg.append('text').attr('x',646).attr('y',y(rows.at(-1).gt_co2)+4).attr('fill',colors[i]).text(names[i]);
+});
+function update(){
+ const start=+document.querySelector('input').value;
+ document.querySelector('#period').textContent=start+'–'+(start+19);
+ band.attr('x',x(start)).attr('width',x(start+19)-x(start));
+ const table=d3.select('table');table.selectAll('*').remove();
+ table.append('tr').selectAll('th').data(['Pathway',...d3.timeMonth.range(new Date(2020,0),new Date(2021,0)).map(d3.timeFormat('%b')),'Below 1']).join('th').text(d=>d);
+ paths.forEach((p,i)=>{
+ const tr=table.append('tr');tr.append('th').style('color',colors[i]).text(names[i]);
+ const selected=ice.filter(d=>d.scenario===p&&d.year>=start&&d.year<start+20);
+ const values=d3.range(1,13).map(m=>d3.mean(selected.filter(d=>d.month===m),d=>d.area));
+ tr.selectAll('td').data(values).join('td').style('background',d=>d3.interpolateBlues(Math.min(d/16,1))).style('color',d=>d>9?'white':'#112a40').text(d=>d.toFixed(1)+(d<1?' ●':'')).attr('title',d=>d.toFixed(3)+' million km²');
+ tr.append('th').text(values.filter(d=>d<1).length);
+ });
+}
+document.querySelector('input').oninput=update;update();
+</script>

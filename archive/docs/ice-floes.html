@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>September on the ice</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 20px;
+        background: #f5f9f9;
+        color: #153f4c;
+        font: 15px/1.45 system-ui,sans-serif;
+      }
+
+      main {
+        max-width: 1000px;
+        margin: auto;
+      }
+
+      .kicker {
+        font-size: 11px;
+        letter-spacing: .16em;
+        font-weight: 750;
+        color: #376e77;
+      }
+
+      h1 {
+        font: 600 clamp(27px,4vw,40px)/1.1 Georgia,serif;
+        margin: 7px 0;
+      }
+
+      p {
+        margin: 8px 0;
+      }
+
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 16px 0;
+      }
+
+      .controls input {
+        flex: 1;
+        accent-color: #146e7c;
+      }
+
+      output {
+        font-weight: bold;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .panels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      article {
+        min-width: 0;
+        background: white;
+        border: 1px solid #d1e2e3;
+        border-radius: 14px;
+        overflow: hidden;
+      }
+
+      header,footer {
+        padding: 12px 14px;
+      }
+
+      label {
+        font-weight: 650;
+      }
+
+      select {
+        display: block;
+        width: 100%;
+        font: inherit;
+        color: inherit;
+        background: white;
+        border: 1px solid #a4c3c7;
+        border-radius: 6px;
+        padding: 6px;
+        margin-top: 4px;
+      }
+
+      svg.scene {
+        display: block;
+        width: 100%;
+        background: #195568;
+      }
+
+      footer b {
+        font-size: 21px;
+      }
+
+      footer small {
+        display: block;
+        color: #426671;
+      }
+
+      .note {
+        font-size: 13px;
+        margin-top: 14px;
+        color: #426671;
+      }
+
+      @media (max-width: 460px) {
+        body {
+          padding: 8px;
+        }
+
+        .panels {
+          gap: 5px;
+        }
+
+        header,footer {
+          padding: 7px;
+        }
+
+        select {
+          font-size: 12px;
+        }
+      }
+    </style>
+  <link rel="stylesheet" href="site.css">
+</head>
+
+  <body>
+  <nav aria-label="Visualizations"></nav>
+  <script src="navigation.js"></script>
+    <main>
+      <h1>September on the ice</h1>
+      <p>
+        Compare two emissions pathways. Move through time to see how much
+        sea ice the model projects each September.
+      </p>
+
+      <div class="controls">
+        <label for="year">Year</label>
+        <input id="year" type="range" min="2015" max="2100" value="2015">
+        <output for="year"></output>
+      </div>
+
+      <!-- D3 builds one comparison panel per selected pathway here. -->
+      <div class="panels"></div>
+
+      <p class="note">
+        One tile represents approximately 50,000 km². Both scenes use the same
+        scale and layout. Tile positions are illustrative.
+      </p>
+    </main>
+
+    <script src="d3.min.js"></script>
+  <script src="climate-data.js"></script>
+  <script src="ice-floes.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+// Add a page here to give it a tab on every visualization.
+
+const pages = [
+  ["index.html", "Ice calendar"],
+  ["ice-floes.html", "September ice floes"],
+  ["temperature.html", "Global temperatures (by month)"],
+  ["warming-map.html", "Warming map"],
+  ["sea-levels.html", "Sea levels rising"],
+  ["global-temperature.html", "Global Temperatures (world map)"]
+];
+
+const nav = document.querySelector("nav");
+const current = location.pathname.split("/").pop() || "index.html";
+for (const [href, label] of pages) {
+  const link = document.createElement("a");
+  link.href = href;
+  link.textContent = label;
+  if (href === current) {
+    link.setAttribute("aria-current", "page");
+  }
+  nav.append(link);
+}
