@@ -1,12 +1,6 @@
-// Add a page here to give it a tab on every visualization.
-
 const pages = [
-  ["index.html", "Ice calendar"],
   ["ice-floes.html", "September ice floes"],
-  ["temperature.html", "Global temperatures (by month)"],
-  ["warming-map.html", "Warming map"],
-  ["sea-levels.html", "Sea levels rising"],
-  ["global-temperature.html", "Global Temperatures (world map)"]
+  ["temperature.html", "Temperature projections"]
 ];
 
 const nav = document.querySelector("nav");
