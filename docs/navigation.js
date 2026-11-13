@@ -1,5 +1,9 @@
 const pages = [
-  ["ice-floes.html", "September ice floes"]
+  ["ice-floes.html", "September ice floes"],
+  ["ice-floes-copy.html", "September ice floes · version 2"],
+  ["ice-floes-v3.html", "September ice floes · version 3"],
+  ["ice-floes-v4.html", "September ice floes · version 4"],
+  ["ice-floes-v5.html", "September ice floes · version 5"]
 ];
 
 const nav = document.querySelector("nav");

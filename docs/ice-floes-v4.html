@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>September on the ice</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 20px;
+        background: #f5f9f9;
+        color: #153f4c;
+        font: 15px/1.45 system-ui,sans-serif;
+      }
+
+      main {
+        max-width: 1000px;
+        margin: auto;
+      }
+
+      .kicker {
+        font-size: 11px;
+        letter-spacing: .16em;
+        font-weight: 750;
+        color: #376e77;
+      }
+
+      h1 {
+        font: 600 clamp(27px,4vw,40px)/1.1 Georgia,serif;
+        margin: 7px 0;
+      }
+
+      p {
+        margin: 8px 0;
+      }
+
+      .pathway-picker {
+        display: block;
+        margin: 18px 0;
+        padding: 14px;
+        background: white;
+        border: 1px solid #d1e2e3;
+        border-radius: 12px;
+      }
+
+      .pathway-hint {
+        margin: 0 0 8px;
+        color: #426671;
+        font-size: 13px;
+      }
+      .pathway-controls {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .pathway-menu { position: relative; }
+      .pathway-menu summary {
+        min-width: 260px;
+        padding: 8px 12px;
+        border: 1px solid #a4c3c7;
+        border-radius: 7px;
+        background: white;
+        cursor: pointer;
+        font-weight: 650;
+      }
+      .pathway-options {
+        position: absolute;
+        z-index: 2;
+        top: calc(100% + 4px);
+        left: 0;
+        min-width: 280px;
+        padding: 8px;
+        background: white;
+        border: 1px solid #a4c3c7;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px #153f4c24;
+      }
+      .pathway-options label {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 7px;
+        font-weight: 500;
+      }
+      .pathway-options input { accent-color: #146e7c; }
+      #selection-status { flex: 1; margin: 0; color: #426671; font-size: 13px; }
+      .panel-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .panel-heading strong { min-width: 0; }
+      .area-label { flex: 0 0 auto; white-space: nowrap; color: #426671; }
+      .area-label b { color: #153f4c; font-size: 21px; font-variant-numeric: tabular-nums; }
+      .pathway-picker button {
+        min-height: 40px;
+        padding: 7px 16px;
+        border: 0;
+        border-radius: 7px;
+        background: #146e7c;
+        color: white;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .pathway-picker button:disabled { opacity: .65; cursor: default; }
+      #visualization[hidden] { display: none; }
+
+      .controls {
+        display: grid;
+        grid-template-columns: calc(11% + 8px) calc(78% - 16px) calc(11% + 8px);
+        align-items: center;
+        margin: 16px 0;
+        padding: 12px 16px;
+        background: white;
+        border: 1px solid #d1e2e3;
+        border-radius: 14px;
+      }
+
+      .controls label {
+        text-align: right;
+        padding-right: 26px;
+        font-size: 18px;
+      }
+
+      .controls output {
+        font-size: 18px;
+      }
+
+      .controls input {
+        width: calc(100% + 32px);
+        min-width: 0;
+        margin-left: -16px;
+        accent-color: #146e7c;
+      }
+
+      output {
+        font-weight: bold;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .controls output {
+        padding-left: 20px;
+      }
+
+      .panels {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      article {
+        min-width: 0;
+        background: white;
+        border: 1px solid #d1e2e3;
+        border-radius: 14px;
+        overflow: hidden;
+      }
+
+      header,footer {
+        padding: 12px 14px;
+      }
+
+      label {
+        font-weight: 650;
+      }
+
+      select {
+        display: block;
+        width: 100%;
+        font: inherit;
+        color: inherit;
+        background: white;
+        border: 1px solid #a4c3c7;
+        border-radius: 6px;
+        padding: 6px;
+        margin-top: 4px;
+      }
+
+      svg.scene {
+        display: block;
+        width: 100%;
+        background: #195568;
+      }
+
+      footer b {
+        font-size: 21px;
+      }
+
+      footer small {
+        display: block;
+        color: #426671;
+      }
+
+      .note {
+        font-size: 13px;
+        margin-top: 14px;
+        color: #426671;
+      }
+
+      .temperature-plot {
+        margin-top: 16px;
+        padding: 14px 16px 10px;
+        background: white;
+        border: 1px solid #d1e2e3;
+        border-radius: 14px;
+      }
+
+      .temperature-plot h2 {
+        margin: 0 0 4px;
+        color: #153f4c;
+        font: 600 21px/1.2 Georgia, serif;
+        text-align: center;
+      }
+
+      .temperature-plot p {
+        margin: 5px 0;
+        color: #426671;
+        font-size: 13px;
+      }
+
+      #temperature-chart {
+        display: block;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+      }
+
+      #temperature-chart text {
+        font: 12px system-ui, sans-serif;
+        fill: #426671;
+      }
+
+      #temperature-chart .grid line {
+        stroke: #e0ebec;
+      }
+
+      #temperature-chart .grid path {
+        display: none;
+      }
+
+      #temperature-chart .axis path,
+      #temperature-chart .axis line {
+        stroke: #819da2;
+      }
+
+      #temperature-chart .series-label {
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      #temperature-chart .axis-title {
+        font-size: 13px;
+        font-weight: 650;
+        fill: #153f4c;
+      }
+
+      #temperature-chart .gap-label {
+        font-size: 13px;
+        font-weight: 700;
+        fill: #c9543f;
+      }
+
+      @media (max-width: 620px) {
+        .pathway-controls { align-items: stretch; flex-direction: column; }
+        .pathway-menu, .pathway-menu summary, .pathway-options { min-width: 0; width: 100%; }
+        .pathway-options { position: static; margin-top: 5px; box-shadow: none; }
+        .panel-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
+        .controls output { padding-left: 0; }
+      }
+
+      @media (max-width: 460px) {
+        body {
+          padding: 8px;
+        }
+
+        .panels {
+          gap: 5px;
+        }
+
+        header,footer {
+          padding: 7px;
+        }
+
+        select {
+          font-size: 12px;
+        }
+      }
+    </style>
+  <link rel="stylesheet" href="site.css">
+</head>
+
+  <body>
+  <nav aria-label="Visualizations"></nav>
+  <script src="navigation.js"></script>
+    <main>
+      <h1>September on the ice</h1>
+      <p>
+        Compare two emissions pathways. Move through time to see how much
+        sea ice the model projects each September.
+      </p>
+
+      <!-- D3 builds one comparison panel per selected pathway here. -->
+      <div class="pathway-picker">
+        <p class="pathway-hint">The lower-emissions pathway will appear first.</p>
+        <div class="pathway-controls">
+          <details class="pathway-menu">
+            <summary id="pathway-summary">Choose two pathways</summary>
+            <div class="pathway-options" role="group" aria-label="Choose exactly two emissions pathways">
+              <label><input class="pathway-choice" type="checkbox" value="ssp126"> SSP1-2.6 · lower emissions</label>
+              <label><input class="pathway-choice" type="checkbox" value="ssp245"> SSP2-4.5 · intermediate</label>
+              <label><input class="pathway-choice" type="checkbox" value="ssp585"> SSP5-8.5 · very high emissions</label>
+            </div>
+          </details>
+          <p id="selection-status" aria-live="polite">Select exactly two pathways.</p>
+        </div>
+      </div>
+
+      <div id="visualization">
+      <div class="panels"></div>
+
+      <div class="controls">
+        <label for="year">Year</label>
+        <input id="year" type="range" min="2015" max="2100" value="2015" disabled>
+        <output for="year"></output>
+      </div>
+
+      <section class="temperature-plot" aria-labelledby="temperature-title">
+        <h2 id="temperature-title">A warmer Arctic means a wider temperature gap</h2>
+        <svg id="temperature-chart" viewBox="0 0 1000 350" role="img" aria-label="Arctic temperature pathways from 2015 to 2100"></svg>
+      </section>
+
+
+
+      <p class="note">
+        One tile represents approximately 50,000 km². Both scenes use the same
+        scale and layout. Tile positions are illustrative.
+      </p>
+
+      <p class="note">Annual mean near-surface air temperature north of 66.5°N, shown as warming relative to each pathway’s 2015–2024 average.</p>
+      <p class="note">Area-weighted from monthly CMIP6 tas data for CNRM-CM6-1, ensemble member r1i1p1f2.</p>
+      </div>
+    </main>
+
+    <script src="d3.min.js"></script>
+  <script src="climate-data.js"></script>
+  <script src="ice-floes-v4.js?v=2"></script>
+</body>
+</html>
