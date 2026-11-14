@@ -427,6 +427,38 @@
           flex-shrink: 0;
         }
 
+
+      .project-writeup {
+        margin-top: 24px;
+        padding: 24px;
+        background: white;
+        border: 1px solid #d1e2e3;
+        border-radius: 14px;
+      }
+
+      .project-writeup h2 {
+        margin: 0 0 18px;
+        font: 600 26px sans-serif, serif;
+        color: #153f4c;
+      }
+
+      .project-writeup h3 {
+        margin: 22px 0 10px;
+        color: #153f4c;
+        font-size: 18px;
+      }
+
+      .project-writeup p {
+        margin: 10px 0 16px;
+        color: #426671;
+        line-height: 1.7;
+      }
+
+      .project-writeup a {
+        color: #146e7c;
+      }
+
+
     </style>
   <link rel="stylesheet" href="site.css">
 </head>
@@ -501,6 +533,64 @@
         <svg id="temperature-chart" viewBox="0 0 1000 350" role="img" aria-label="Annual Arctic warming pathways from 2016 to 2100"></svg>
       </section>
 
+      
+      <section class="project-writeup">
+        <h2>Project Writeup</h2>
+        <h3>The Relationship Between Arctic Warming and Sea-Ice Decline Under Different Climate Pathways</h3>
+
+        <h3>Dataset</h3>
+        <p>
+          Our data comes from the Coupled Model Intercomparison Project Phase 6 (CMIP6).
+          <a href="https://console.cloud.google.com/marketplace/product/noaa-public/cmip6" target="_blank" rel="noopener noreferrer">View dataset</a>.
+        </p>
+
+        <h3>Background and Design Rationale</h3>
+        <p>
+          Throughout the design process, we explored different ways to visualize the relationship between rising temperatures and changes in Arctic sea ice under different climate pathways. Our visualization focuses on September sea-ice area in the Northern Hemisphere and temperature changes in regions north of 66.5°N, allowing users to compare two of three climate pathway options from 2016–2100. We chose to focus on September because it allows us to compare sea-ice conditions during the same month each year, while limiting the visualization to three pathways and a specific time range helps avoid overwhelming users with too much information. Our goal is to help users understand how different emissions pathways may affect Arctic warming and sea-ice coverage over time.
+        </p>
+
+        <p>
+          We averaged September sea-ice area into five-year periods to smooth out short-term fluctuations, making long-term trends and differences between pathways easier to identify while reducing the number of steps needed in the year slider. This made it easier to compare changes in sea-ice coverage without having the visualization change too frequently between individual years. For the temperature visualization, we displayed annual temperature changes while using five-year averages to calculate the difference in warming between the two pathways during the selected period. We chose to keep the annual fluctuations in the line chart because we wanted users to see how temperatures vary from year to year rather than only showing the overall trend. Temperature changes are measured relative to each pathway's own 2015–2024 average, allowing us to show how warming develops within each pathway.
+        </p>
+
+        <p>
+          For our sea-ice visualization, we chose hexagonal tiles to represent sea-ice area, where each tile represents approximately 50,000 km² and a larger number of tiles indicates greater coverage. Since the number of tiles is rounded, we included numerical labels to show more precise area values and allow more accurate comparisons. We used light blue and white for the ice against a dark blue background to make the differences easier to see, while colored outlines emphasize differences in ice coverage. The green and red outlines show tiles appearing or disappearing when the selected period changes, and the cyan outlines highlight additional ice in one pathway compared with the other. The tile positions are illustrative rather than geographic. We added polar bears to make the visualization more engaging and connect changes in sea-ice coverage to their potential effects on Arctic wildlife. We also placed the two pathways side by side to allow direct comparison.
+        </p>
+
+        <p>
+          For the temperature visualization, we used a line chart with year on the x-axis and temperature change on the y-axis, using teal and coral to distinguish the two pathways. The shaded area between the lines emphasizes the temperature gap over time, while a separate highlighted band marks the selected five-year period. An annotation displays the difference in average warming between the pathways during that period and moves as users adjust the year slider. The slider updates both sea-ice panels and highlights the corresponding five-year period on the temperature chart, connecting the two visualizations and allowing users to explore how temperature changes relate to declining sea ice. For example, in 2096–2100, the sea-ice area under SSP1-2.6 remains around 1.6 million km², while under SSP5-8.5 it approaches zero, showing how the differences between pathways become more noticeable toward the end of the century.
+        </p>
+
+        <h3>Development Process</h3>
+        <p>
+          Before deciding to focus on sea ice and temperature, our team explored several visualization ideas using CMIP6 climate data, including how different emissions pathways affect sea-ice coverage, sea level rise, global temperatures, and geographic warming patterns. After comparing these ideas, we decided to combine the sea-ice visualization with a temperature graph to better show the relationship between rising temperatures and declining sea ice under different emissions scenarios.
+        </p>
+
+        <p>
+          During development, we experimented with different ways to represent sea-ice coverage and temperature changes, including thermometer-style visuals, different highlighting techniques, and different layouts. We eventually chose hexagonal tiles for sea ice and a line chart for temperature because they allowed users to compare two emissions pathways while seeing how temperature changes over time. We also tested different color schemes, adjusted sizes and layouts, and experimented with different versions of interactive features such as the scenario selector and shared year slider.
+        </p>
+
+        <h3>Team Contributions</h3>
+        <p>
+          We all made 1-2 interactive visualizations before deciding which topic we want to focus on. After deciding on sea-ice and temperature, Marta started the initial prototype visualizations of the sea-ice tiles and temperature graph. Megan implemented new design encodings for the interactive features. Nghi cleaned and refined the layouts, labels, and graphs. Catherine worked on the writeup, including explanations of our team's rationale, background, and visual encodings. Throughout the development process, we also gave each other feedback, shared ideas, and discussed which designs, layouts, and interactive features worked best to improve the final visualization.
+        </p>
+
+        <p>
+          <strong>Marta:</strong> I created the first draft of the website visualization and added a year slider and temperature data. I made several layout versions to figure out how readers could see both visualizations at the same time. I refined the cyan highlighting and updated the graph to highlight a five-year period and compare the average temperature difference between pathways. I spent around 9 hours.
+        </p>
+
+        <p>
+          <strong>Megan:</strong> I worked on drafting design choices and encodings during the brainstorming and experimentation phase. I implemented initial design layouts for the interactive binned year slider, as well as tile-related designs such as transitions and the legend. I spent the most time creating an initial design that tracks and compares sea-ice tiles from the lower-emissions visualization against the higher-emissions visualization by highlighting additional ice tiles, since the original code was incompatible with ice-tile tracking. I spent around 5 hours.
+        </p>
+
+        <p>
+          <strong>Catherine:</strong> I wrote the writeup.
+        </p>
+
+        <p>
+          <strong>Nghi:</strong> I worked on adjusting the layout, spacing, and visual details to improve readability. For the legend, I redesigned the original text explanation into a more compact layout using colored symbols to represent the ice tiles. I also improved the axis labels and contributed to the writeup by adding to the design rationale and visual encodings. What took me the most time was experimenting with different designs and testing different layouts to see what looked best. I spent around 3-4 hours in total.
+        </p>
+      </section>
 
 
       <p class="note">
