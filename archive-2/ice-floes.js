@@ -219,7 +219,7 @@ function update() {
   updateTemperatureChart();
 }
 yearInput.addEventListener("input", update);
-d3.csv("arctic-temperature.csv", d3.autoType)
+d3.csv("../docs/arctic-temperature.csv", d3.autoType)
   .then(rows => {
     temperatureRows = rows;
     temperatureByScenario = d3.group(rows, d => d.scenario);

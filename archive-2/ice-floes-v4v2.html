@@ -52,6 +52,27 @@
         color: #426671;
         font-size: 13px;
       }
+      .pathway-hint-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 0 0 8px;
+      }
+      .pathway-hint-row .pathway-hint { margin: 0; }
+      .ice-difference {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 7px;
+        margin: 0;
+        color: #153f4c;
+        font-size: 13px;
+        font-weight: 650;
+        white-space: nowrap;
+      }
+      .ice-difference[hidden] { display: none; }
+      .ice-difference svg { width: 22px; height: 22px; }
       .pathway-controls {
         display: flex;
         align-items: center;
@@ -111,15 +132,47 @@
       .pathway-picker button:disabled { opacity: .65; cursor: default; }
       #visualization[hidden] { display: none; }
 
-      .controls {
-        display: grid;
-        grid-template-columns: calc(11% + 8px) calc(78% - 16px) calc(11% + 8px);
-        align-items: center;
+      .year-control {
+        width: 100%;
         margin: 16px 0;
         padding: 12px 16px;
         background: white;
         border: 1px solid #d1e2e3;
         border-radius: 14px;
+      }
+
+      .year-selected {
+        text-align: center;
+        color: #426671;
+        font-size: 14px;
+        margin-bottom: 2px;
+      }
+
+      .year-selected output {
+        color: #153f4c;
+        font-size: 18px;
+        font-weight: bold;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .year-slider {
+        display: grid;
+        grid-template-columns: 11% 78% 11%;
+        align-items: center;
+      }
+
+      .year-endpoint {
+        color: #426671;
+        font-size: 13px;
+        text-align: center;
+      }
+
+      .year-control input {
+        grid-column: 2;
+        width: calc(100% + 16px);
+        margin-left: -8px;
+        accent-color: #146e7c;
+        cursor: pointer;
       }
 
       .controls label {
@@ -272,6 +325,7 @@
         .pathway-options { position: static; margin-top: 5px; box-shadow: none; }
         .panel-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
         .controls output { padding-left: 0; }
+        .pathway-hint-row { flex-direction: column; gap: 6px; }
       }
 
       @media (max-width: 460px) {
@@ -292,7 +346,7 @@
         }
       }
     </style>
-  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="../docs/site.css">
 </head>
 
   <body>
@@ -307,7 +361,16 @@
 
       <!-- D3 builds one comparison panel per selected pathway here. -->
       <div class="pathway-picker">
-        <p class="pathway-hint">The lower-emissions pathway will appear first.</p>
+        <div class="pathway-hint-row">
+          <p class="pathway-hint">The lower-emissions pathway appears first. Green tiles: newly added sea ice. Red tiles: disappearing sea ice.</p>
+          <p class="ice-difference" id="ice-difference" hidden>
+            <svg viewBox="-13 -13 26 26" aria-hidden="true">
+              <polygon points="0,-12 10.39,-6 10.39,6 0,12 -10.39,6 -10.39,-6"
+                      fill="#f0cf82" stroke="#d1ae5c" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+            <span id="ice-difference-text"></span>
+          </p>
+        </div>
         <div class="pathway-controls">
           <details class="pathway-menu">
             <summary id="pathway-summary">Choose two pathways</summary>
@@ -321,13 +384,20 @@
         </div>
       </div>
 
+
+
       <div id="visualization">
       <div class="panels"></div>
 
-      <div class="controls">
-        <label for="year">Year</label>
-        <input id="year" type="range" min="2015" max="2100" value="2015" disabled>
-        <output for="year"></output>
+      <div class="year-control">
+        <div class="year-selected">
+          Years <output for="year">2015 - 2019</output>
+        </div>
+        <div class="year-slider">
+          <span class="year-endpoint">2015</span>
+          <input id="year" type="range" min="2015" max="2100" step="5" value="2015" disabled>
+          <span class="year-endpoint">2100</span>
+        </div>
       </div>
 
       <section class="temperature-plot" aria-labelledby="temperature-title">
@@ -347,8 +417,8 @@
       </div>
     </main>
 
-    <script src="d3.min.js"></script>
-  <script src="climate-data.js"></script>
-  <script src="ice-floes-v4.js?v=2"></script>
+    <script src="../docs/d3.min.js"></script>
+  <script src="../docs/climate-data.js"></script>
+  <script src="ice-floes-v4v2.js?v=2"></script>
 </body>
 </html>
