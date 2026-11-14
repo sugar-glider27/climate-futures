@@ -1,6 +1,4 @@
-const pages = [
-  ["ice-floes-v4v4.html", "September ice floes · version 4.4"],
-];
+const pages = [];
 
 const nav = document.querySelector("nav");
 const current = location.pathname.split("/").pop() || "index.html";

@@ -361,6 +361,72 @@
           font-size: 12px;
         }
       }
+
+        .ice-legend {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 14px 24px;
+          margin-top: 16px;
+          padding-top: 14px;
+          border-top: 1px solid #e0ebec;
+          color: #426671;
+          font-size: 13px;
+        }
+
+        .legend-item {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          white-space: nowrap;
+        }
+
+        .legend-hex {
+          width: 18px;
+          height: 18px;
+          flex-shrink: 0;
+          overflow: visible;
+        }
+
+        .legend-hex polygon {
+          fill: white;
+          stroke-width: 2.5;
+          stroke-linejoin: round;
+        }
+
+        .legend-hex.added polygon {
+          stroke: #35a76c;
+        }
+
+        .legend-hex.lost polygon {
+          stroke: #d95151;
+        }
+
+        .legend-hex.extra polygon {
+          stroke: #58cbd8;
+        }
+
+        .ice-legend .ice-difference {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          margin: 0;
+          font-weight: 650;
+          color: #153f4c;
+          font-size: 13px;
+          white-space: normal;
+        }
+
+        .ice-legend .ice-difference[hidden] {
+          display: none;
+        }
+
+        .ice-legend .ice-difference svg {
+          width: 20px;
+          height: 20px;
+          flex-shrink: 0;
+        }
+
     </style>
   <link rel="stylesheet" href="site.css">
 </head>
@@ -375,18 +441,8 @@
         sea ice the model projects each September.
       </p>
 
-      <!-- D3 builds one comparison panel per selected pathway here. -->
+
       <div class="pathway-picker">
-        <div class="pathway-hint-row">
-          <p class="pathway-hint">The lower-emissions pathway appears first. Cyan side marks: extra sea ice compared with the other pathway. Green tiles: newly added sea ice. Red tiles: disappearing sea ice.</p>
-          <p class="ice-difference" id="ice-difference" aria-live="polite" hidden>
-            <svg viewBox="-13 -13 26 26" aria-hidden="true">
-              <polygon points="0,-12 10.39,-6 10.39,6 0,12 -10.39,6 -10.39,-6"
-                      fill="#edf7f6" stroke="#58cbd8" stroke-width="1.7" stroke-linejoin="round"/>
-            </svg>
-            <span id="ice-difference-text"></span>
-          </p>
-        </div>
         <div class="pathway-controls">
           <details class="pathway-menu">
             <summary id="pathway-summary">Choose two pathways</summary>
@@ -398,9 +454,31 @@
           </details>
           <p id="selection-status" aria-live="polite">Select exactly two pathways.</p>
         </div>
+
+        <div class="ice-legend">
+          <div class="legend-item">
+            <svg class="legend-hex added" viewBox="0 0 24 24" aria-hidden="true">
+              <polygon points="12,2 20,7 20,17 12,22 4,17 4,7" />
+            </svg>
+            <span>Ice gained</span>
+          </div>
+
+          <div class="legend-item">
+            <svg class="legend-hex lost" viewBox="0 0 24 24" aria-hidden="true">
+              <polygon points="12,2 20,7 20,17 12,22 4,17 4,7" />
+            </svg>
+            <span>Ice lost</span>
+          </div>
+
+          <div class="ice-difference" id="ice-difference" aria-live="polite" hidden>
+            <svg viewBox="-13 -13 26 26" aria-hidden="true">
+              <polygon points="0,-12 10.39,-6 10.39,6 0,12 -10.39,6 -10.39,-6"
+                       fill="#edf7f6" stroke="#58cbd8" stroke-width="1.7" stroke-linejoin="round"/>
+            </svg>
+            <span id="ice-difference-text"></span>
+          </div>
+        </div>
       </div>
-
-
 
       <div id="visualization">
       <div class="panels"></div>

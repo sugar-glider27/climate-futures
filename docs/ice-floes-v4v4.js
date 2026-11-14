@@ -173,8 +173,14 @@ function updateTemperatureChart() {
 
   xAxisGroup.attr("transform", `translate(0,${plotBottom})`)
     .call(d3.axisBottom(xScale).tickValues(years).tickFormat(d3.format("d")));
-  yAxisGroup.attr("transform", `translate(${plotLeft},0)`)
-    .call(d3.axisLeft(yScale).ticks(5).tickFormat(d => `${d > 0 ? "+" : ""}${d.toFixed(0)}`));
+  yAxisGroup
+    .attr("transform", `translate(${plotLeft},0)`)
+    .call(
+      d3.axisLeft(yScale)
+        .ticks(5)
+        .tickFormat(d => `${d > 0 ? "+" : ""}${d.toFixed(0)}°`)
+    );
+
   gridGroup.attr("transform", `translate(${plotLeft},0)`)
     .call(d3.axisLeft(yScale).ticks(5).tickSize(-(plotRight - plotLeft)).tickFormat(""));
 
@@ -184,7 +190,7 @@ function updateTemperatureChart() {
     .attr("text-anchor", "middle").text("Year");
   temperatureSvg.append("text").attr("class", "axis-title")
     .attr("transform", `translate(35,${(plotTop + plotBottom) / 2}) rotate(-90)`)
-    .attr("text-anchor", "middle").text("Warming vs 2015–2024 (°C)");
+    .attr("text-anchor", "middle").text("Arctic temperature change (°C)");
 
   if (!started || selectedScenarios.length !== 2) {
     band.attr("d", null);
@@ -277,7 +283,7 @@ function updateTemperatureChart() {
   if (values.every(Number.isFinite)) {
     const warmer = values[0] >= values[1] ? 0 : 1;
     const gap = Math.abs(values[0] - values[1]);
-    const label = `${gap.toFixed(1)}°C warmer · ${scenarioNames[current[warmer].scenario]}`;
+    const label = `${gap.toFixed(1)}°C warmer than ${scenarioNames[current[warmer].scenario]}`;
     const calloutWidth = 218;
     const markerX = xScale(periodMiddle);
     const chartMidpoint = (2016 + 2100) / 2;
@@ -339,10 +345,17 @@ function update() {
   const extraTiles = Math.abs(counts[0] - counts[1]);
   const sharedTiles = Math.min(...counts);
   const moreIceIndex = extraTiles === 0 ? -1 : counts[0] > counts[1] ? 0 : 1;
-  differenceText.textContent = extraTiles === 0
-    ? "Same rounded tile count"
-    : `${extraTiles} more tile${extraTiles === 1 ? "" : "s"} in ${scenarioNames[selectedScenarios[moreIceIndex]]} (${moreIceIndex === 0 ? "left" : "right"})`;
-  differenceLegend.querySelector("svg").style.display = extraTiles === 0 ? "none" : "";
+  
+const pathwayName = moreIceIndex === -1
+  ? ""
+  : pathways.find(
+      p => p[0] === selectedScenarios[moreIceIndex]
+    )?.[1];
+
+differenceText.textContent = extraTiles === 0
+  ? "Same rounded tile count"
+  : `${extraTiles} more tile${extraTiles === 1 ? "" : "s"} in ${pathwayName} (${moreIceIndex === 0 ? "left" : "right"})`;
+differenceLegend.querySelector("svg").style.display = extraTiles === 0 ? "none" : "";
   differenceLegend.hidden = false;
   panels.forEach((panel, index) => {
     const {label, svg, areaValue} = panel;
