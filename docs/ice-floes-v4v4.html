@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>September on the ice</title>
+    <title>September on the ice · version 4.4</title>
     <style>
       * {
         box-sizing: border-box;
@@ -52,6 +52,27 @@
         color: #426671;
         font-size: 13px;
       }
+      .pathway-hint-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 0 0 8px;
+      }
+      .pathway-hint-row .pathway-hint { margin: 0; }
+      .ice-difference {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 7px;
+        margin: 0;
+        color: #153f4c;
+        font-size: 13px;
+        font-weight: 650;
+        white-space: nowrap;
+      }
+      .ice-difference[hidden] { display: none; }
+      .ice-difference svg { width: 22px; height: 22px; }
       .pathway-controls {
         display: flex;
         align-items: center;
@@ -111,17 +132,64 @@
       .pathway-picker button:disabled { opacity: .65; cursor: default; }
       #visualization[hidden] { display: none; }
 
-      .controls {
-        display: grid;
-        grid-template-columns: calc(7.6% + 14.4px) calc(77.9% - 26.5px) calc(14.5% + 12.1px);
-        align-items: center;
+      .year-control {
+        width: 100%;
         margin: 16px 0;
+        padding: 12px 16px;
+        background: white;
+        border: 1px solid #d1e2e3;
+        border-radius: 14px;
+      }
+
+      .year-selected {
+        text-align: center;
+        color: #426671;
+        font-size: 14px;
+        margin-bottom: 2px;
+      }
+
+      .year-selected output {
+        color: #153f4c;
+        font-size: 18px;
+        font-weight: bold;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .year-slider {
+        display: grid;
+        grid-template-columns: minmax(82px, 1fr) minmax(0, 6fr) minmax(82px, 1fr);
+        column-gap: 8px;
+        align-items: center;
+      }
+
+      .year-endpoint {
+        color: #426671;
+        font-size: 13px;
+        text-align: center;
+      }
+
+      .year-control input {
+        grid-column: 2;
+        width: 100%;
+        margin: 0;
+        accent-color: #146e7c;
+        cursor: pointer;
+      }
+
+      .controls label {
+        text-align: right;
+        padding-right: 26px;
+        font-size: 18px;
+      }
+
+      .controls output {
+        font-size: 18px;
       }
 
       .controls input {
-        width: calc(100% + 16px);
+        width: calc(100% + 32px);
         min-width: 0;
-        margin-left: -8px;
+        margin-left: -16px;
         accent-color: #146e7c;
       }
 
@@ -201,6 +269,7 @@
         margin: 0 0 4px;
         color: #153f4c;
         font: 600 21px/1.2 Georgia, serif;
+        text-align: center;
       }
 
       .temperature-plot p {
@@ -245,6 +314,21 @@
         fill: #153f4c;
       }
 
+      .temperature-plot .chart-explainer {
+        text-align: center;
+      }
+
+      #temperature-chart .period-label {
+        font-size: 13px;
+        font-weight: 700;
+        fill: #876026;
+      }
+
+      #temperature-chart .gap-period {
+        font-size: 11px;
+        fill: #876458;
+      }
+
       #temperature-chart .gap-label {
         font-size: 13px;
         font-weight: 700;
@@ -256,8 +340,8 @@
         .pathway-menu, .pathway-menu summary, .pathway-options { min-width: 0; width: 100%; }
         .pathway-options { position: static; margin-top: 5px; box-shadow: none; }
         .panel-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
-        .controls { grid-template-columns: 1fr; gap: 6px; }
         .controls output { padding-left: 0; }
+        .pathway-hint-row { flex-direction: column; gap: 6px; }
       }
 
       @media (max-width: 460px) {
@@ -293,7 +377,16 @@
 
       <!-- D3 builds one comparison panel per selected pathway here. -->
       <div class="pathway-picker">
-        <p class="pathway-hint">The lower-emissions pathway will appear first.</p>
+        <div class="pathway-hint-row">
+          <p class="pathway-hint">The lower-emissions pathway appears first. Cyan outlines: extra sea ice compared with the other pathway. Green tiles: newly added sea ice. Red tiles: disappearing sea ice.</p>
+          <p class="ice-difference" id="ice-difference" aria-live="polite" hidden>
+            <svg viewBox="-13 -13 26 26" aria-hidden="true">
+              <polygon points="0,-12 10.39,-6 10.39,6 0,12 -10.39,6 -10.39,-6"
+                      fill="#edf7f6" stroke="#58cbd8" stroke-width="1.7" stroke-linejoin="round"/>
+            </svg>
+            <span id="ice-difference-text"></span>
+          </p>
+        </div>
         <div class="pathway-controls">
           <details class="pathway-menu">
             <summary id="pathway-summary">Choose two pathways</summary>
@@ -307,19 +400,28 @@
         </div>
       </div>
 
+
+
       <div id="visualization">
       <div class="panels"></div>
 
+      <div class="year-control">
+        <div class="year-selected">
+          Years <output for="year">2016–2020</output>
+        </div>
+        <div class="year-slider">
+          <span class="year-endpoint">2016–2020</span>
+          <input id="year" type="range" min="2016" max="2096" step="5" value="2016" aria-label="Starting year of the five-year average" disabled>
+          <span class="year-endpoint">2096–2100</span>
+        </div>
+      </div>
+
       <section class="temperature-plot" aria-labelledby="temperature-title">
         <h2 id="temperature-title">A warmer Arctic means a wider temperature gap</h2>
-        <svg id="temperature-chart" viewBox="0 0 1000 350" role="img" aria-label="Arctic temperature pathways from 2015 to 2100"></svg>
+        <p class="chart-explainer">Annual temperatures. The shaded band marks the five years shown in the ice panels above.</p>
+        <svg id="temperature-chart" viewBox="0 0 1000 350" role="img" aria-label="Annual Arctic temperature pathways from 2016 to 2100"></svg>
       </section>
 
-      <div class="controls">
-        <label for="year">Year</label>
-        <input id="year" type="range" min="2015" max="2100" value="2015" disabled>
-        <output for="year"></output>
-      </div>
 
 
       <p class="note">
@@ -334,6 +436,6 @@
 
     <script src="d3.min.js"></script>
   <script src="climate-data.js"></script>
-  <script src="ice-floes-copy.js?v=6"></script>
+  <script src="ice-floes-v4v4.js?v=2"></script>
 </body>
 </html>

@@ -11,6 +11,8 @@ const pathwaySummary = document.querySelector("#pathway-summary");
 const pathwayMenu = document.querySelector(".pathway-menu");
 const selectionStatus = document.querySelector("#selection-status");
 const visualization = document.querySelector("#visualization");
+const differenceLegend = document.querySelector("#ice-difference");
+const differenceText = document.querySelector("#ice-difference-text");
 let selectedScenarios = [];
 let started = false;
 
@@ -59,6 +61,10 @@ const hex = d3.range(6).map(i => {
   return [radius * Math.cos(angle), radius * Math.sin(angle)].join(",");
 }).join(" ");
 
+const iceColor = d3.interpolateRgb("#d5ecee", "#f1f8f7");      // darker blue tiles -> light blue
+const extraIceStroke = "#58cbd8";
+const tileShade = d => 0.5 + 0.45 * Math.sin(d.x + d.y);
+
 function addBear(svg, cell, scale) {
   const bear = svg.append("g").attr("aria-hidden", "true")
     .attr("transform", `translate(${cell.x},${cell.y}) scale(${scale})`);
@@ -74,6 +80,18 @@ function addBear(svg, cell, scale) {
     ].join(" "));
   bear.append("circle").attr("cx", 13).attr("cy", -10).attr("r", 0.75).attr("fill", "#203e49"); // eyes
   bear.append("circle").attr("cx", 17.4).attr("cy", -8.5).attr("r", 1).attr("fill", "#203e49"); // nose
+
+  return bear;
+}
+
+function addGhostBear(svg, cell, scale) {
+  const bear = svg.append("g").attr("aria-hidden", "true")
+    .attr("transform", `translate(${cell.x},${cell.y}) scale(${scale})`)
+    .attr("opacity", 0);
+  bear.append("path") .attr("fill", "#e8f8fa") .attr("fill-opacity", 0.75) .attr("stroke", "#8bbcc5") .attr("stroke-width", 0.9) .attr("stroke-dasharray", "2 1") .attr("d", [ "M-12,-8 Q-13,-15 -5,-16 Q0,-17 4,-13", "L8,-12 Q9,-16 11,-14", "L12,-12 L16,-10 L18,-8 Q17,-6 13,-7 L9,-7", "L8,-1 L5,-1 L5,-6 L3,-1 L1,-1 L1,-6", "L-5,-6 L-6,0 L-9,0 L-9,-6 L-11,-1 L-13,-1", "Z", ].join(" "));
+  bear.append("circle") .attr("cx", 13).attr("cy", -10).attr("r", 0.75) .attr("fill", "#8bbcc5");
+  bear.append("circle") .attr("cx", 17.4).attr("cy", -8.5).attr("r", 1) .attr("fill", "#8bbcc5");
+  return bear;
 }
 
 function createPanel() {
@@ -99,13 +117,15 @@ window.addEventListener("resize", matchPanelHeaderHeights);
 
 const temperatureSvg = d3.select("#temperature-chart");
 const chartWidth = 1000;
-const chartHeight = 350;
-const margin = {top: 26, right: 145, bottom: 64, left: 76};
+const chartHeight = 390;
+const margin = {top: 42, right: 110, bottom: 98, left: 110};
 const plotLeft = margin.left;
 const plotRight = chartWidth - margin.right;
 const plotTop = margin.top;
 const plotBottom = chartHeight - margin.bottom;
-const xScale = d3.scaleLinear().domain([2015, 2100]).range([plotLeft, plotRight]);
+const periods = d3.range(2016, 2100, 5);
+const periodName = year => `${year}–${year + 4}`;
+const xScale = d3.scalePoint().domain(periods).range([plotLeft, plotRight]);
 const xAxisGroup = temperatureSvg.append("g").attr("class", "axis x-axis");
 const yAxisGroup = temperatureSvg.append("g").attr("class", "axis y-axis");
 const gridGroup = temperatureSvg.append("g").attr("class", "grid");
@@ -113,7 +133,10 @@ const band = temperatureSvg.append("path").attr("class", "scenario-band")
   .attr("fill", "#d7ecea").attr("opacity", 0.78);
 const seriesLayer = temperatureSvg.append("g");
 const markerLine = temperatureSvg.append("line")
-  .attr("stroke", "#284c54").attr("stroke-width", 1.4);
+  .attr("stroke", "#284c54").attr("stroke-width", 1.4)
+  .attr("display", "none");
+const periodLabel = temperatureSvg.append("text").attr("class", "period-label")
+  .attr("y", 22).attr("display", "none");
 const pointsLayer = temperatureSvg.append("g");
 const labelsLayer = temperatureSvg.append("g");
 const callout = temperatureSvg.append("g");
@@ -133,10 +156,16 @@ function updateTemperatureChart() {
     .domain([Math.min(0, minimum), maximum])
     .nice(5)
     .range([plotBottom, plotTop]);
-  const years = [2015, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100];
 
   xAxisGroup.attr("transform", `translate(0,${plotBottom})`)
-    .call(d3.axisBottom(xScale).tickValues(years).tickFormat(d3.format("d")));
+    .call(d3.axisBottom(xScale).tickFormat(periodName));
+  xAxisGroup.selectAll(".tick text")
+    .attr("transform", "rotate(-45)")
+    .attr("text-anchor", "end")
+    .attr("dx", "-0.5em").attr("dy", "0.35em")
+    .style("font-size", "11px")
+    .style("font-weight", d => started && d === Number(yearInput.value) ? 700 : null)
+    .style("fill", d => started && d === Number(yearInput.value) ? "#153f4c" : null);
   yAxisGroup.attr("transform", `translate(${plotLeft},0)`)
     .call(d3.axisLeft(yScale).ticks(5).tickFormat(d => `${d > 0 ? "+" : ""}${d.toFixed(0)}`));
   gridGroup.attr("transform", `translate(${plotLeft},0)`)
@@ -145,13 +174,16 @@ function updateTemperatureChart() {
   temperatureSvg.selectAll("text.axis-title").remove();
   temperatureSvg.append("text").attr("class", "axis-title")
     .attr("x", (plotLeft + plotRight) / 2).attr("y", chartHeight - 14)
-    .attr("text-anchor", "middle").text("Year");
+    .attr("text-anchor", "middle").text("Five-year period");
   temperatureSvg.append("text").attr("class", "axis-title")
-    .attr("transform", `translate(19,${(plotTop + plotBottom) / 2}) rotate(-90)`)
+    .attr("transform", `translate(35,${(plotTop + plotBottom) / 2}) rotate(-90)`)
     .attr("text-anchor", "middle").text("Warming vs 2015–2024 (°C)");
 
   if (!started || selectedScenarios.length !== 2) {
     band.attr("d", null);
+    periodLabel.attr("display", "none");
+    temperatureSvg.attr("aria-label", "Choose two pathways to compare Arctic temperature from 2016 to 2100");
+    markerLine.attr("display", "none");
     seriesLayer.selectAll("path.series").remove();
     pointsLayer.selectAll("circle").remove();
     labelsLayer.selectAll("text.series-label").remove();
@@ -159,6 +191,7 @@ function updateTemperatureChart() {
     return;
   }
   const year = Number(yearInput.value);
+  const endYear = year + 4;
   const series = selectedScenarios.map((scenario, index) => ({
     scenario,
     index,
@@ -175,13 +208,13 @@ function updateTemperatureChart() {
     .x(d => xScale(d.year))
     .y0(d => yScale(d.first))
     .y1(d => yScale(d.second))
-    .curve(d3.curveMonotoneX);
+    .curve(d3.curveLinear);
   band.attr("d", area(pairedRows));
 
   const line = d3.line()
     .x(d => xScale(d.year))
     .y(d => yScale(d.anomaly_c))
-    .curve(d3.curveMonotoneX);
+    .curve(d3.curveLinear);
   seriesLayer.selectAll("path.series")
     .data(series, d => `${d.index}-${d.scenario}`)
     .join("path")
@@ -197,17 +230,24 @@ function updateTemperatureChart() {
     ...item,
     value: item.rows.find(d => d.year === year),
   }));
-  markerLine.attr("x1", xScale(year)).attr("x2", xScale(year))
+  markerLine.attr("display", null)
+    .attr("x1", xScale(year)).attr("x2", xScale(year))
     .attr("y1", plotTop).attr("y2", plotBottom);
   pointsLayer.selectAll("circle")
-    .data(current.filter(d => d.value), d => d.index)
+    .data(series.flatMap(item => item.rows.map(row => ({
+      index: item.index, scenario: item.scenario, value: row,
+    }))), d => `${d.scenario}-${d.value.year}`)
     .join("circle")
-    .attr("cx", xScale(year))
+    .attr("cx", d => xScale(d.value.year))
     .attr("cy", d => yScale(d.value.anomaly_c))
-    .attr("r", 6)
+    .attr("r", d => d.value.year === year ? 6 : 3.5)
     .attr("fill", d => chartColors[d.index])
     .attr("stroke", "white")
     .attr("stroke-width", 2);
+
+  periodLabel.attr("display", null)
+    .attr("x", Math.max(plotLeft + 42, Math.min(xScale(year), plotRight - 42)))
+    .attr("text-anchor", "middle").text(`${year}–${endYear}`);
 
   labelsLayer.selectAll("text.series-label")
     .data(series, d => d.index)
@@ -224,28 +264,32 @@ function updateTemperatureChart() {
     const warmer = values[0] >= values[1] ? 0 : 1;
     const gap = Math.abs(values[0] - values[1]);
     const label = `${gap.toFixed(1)}°C warmer · ${scenarioNames[current[warmer].scenario]}`;
-    const calloutWidth = 198;
+    const calloutWidth = 218;
     const markerX = xScale(year);
-    const chartMidpoint = (2015 + 2100) / 2;
+    const chartMidpoint = (periods[0] + periods[periods.length - 1]) / 2;
     const preferredX = year <= chartMidpoint
       ? markerX + 13
       : markerX - calloutWidth - 13;
     const calloutX = Math.max(plotLeft + 8, Math.min(preferredX, plotRight - calloutWidth));
-    const calloutY = Math.max(plotTop + 6, Math.min((yScale(values[0]) + yScale(values[1])) / 2 - 78, plotBottom - 36));
+    const calloutY = Math.max(plotTop + 6, Math.min((yScale(values[0]) + yScale(values[1])) / 2 - 78, plotBottom - 54));
     callout.selectAll("*").remove();
     callout.append("rect").attr("x", calloutX).attr("y", calloutY)
-      .attr("width", 198).attr("height", 30).attr("rx", 14)
+      .attr("width", calloutWidth).attr("height", 48).attr("rx", 12)
       .attr("fill", "#fff8f5").attr("stroke", "#ed7056").attr("stroke-width", 1.5);
     callout.append("text").attr("class", "gap-label")
-      .attr("x", calloutX + 99).attr("y", calloutY + 20)
+      .attr("x", calloutX + calloutWidth / 2).attr("y", calloutY + 20)
       .attr("text-anchor", "middle").text(label);
+    callout.append("text").attr("class", "gap-period")
+      .attr("x", calloutX + calloutWidth / 2).attr("y", calloutY + 37)
+      .attr("text-anchor", "middle").text(`${year}–${endYear} average`);
   }
-  temperatureSvg.attr("aria-label", `Arctic annual mean temperature anomaly in ${year}: ${scenarioNames[series[0].scenario]} ${values[0].toFixed(1)} degrees Celsius and ${scenarioNames[series[1].scenario]} ${values[1].toFixed(1)} degrees Celsius relative to each pathway's 2015 to 2024 average`);
+  temperatureSvg.attr("aria-label", `Arctic five-year mean temperature anomaly for ${year} to ${endYear}: ${scenarioNames[series[0].scenario]} ${values[0].toFixed(1)} degrees Celsius and ${scenarioNames[series[1].scenario]} ${values[1].toFixed(1)} degrees Celsius relative to each pathway's 2015 to 2024 average`);
 }
 
 function update() {
   const year = Number(yearInput.value);
-  document.querySelector("output").textContent = year;
+  const endYear = year + 4;
+  document.querySelector(".year-selected output").textContent = `${year}–${endYear}`;
   if (!started) {
     panels.forEach(panel => {
       panel.svg.selectAll("*").remove();
@@ -254,28 +298,69 @@ function update() {
       panel.label.text("Choose a pathway");
       panel.areaValue.text("—");
       panel.svg.attr("aria-label", "Choose a pathway to show the September sea-ice scene");
+      panel.bears = null;
     });
+    differenceLegend.hidden = true;
     matchPanelHeaderHeights();
     updateTemperatureChart();
     return;
   }
+  const areas = selectedScenarios.map(scenario => {
+    const yearData = byYear.get(scenario);
+    return d3.mean(d3.range(year, endYear + 1), y => yearData.get(y)?.area);
+  });
+  const counts = areas.map(area => Math.round(area / tileArea));
+  const extraTiles = Math.abs(counts[0] - counts[1]);
+  const sharedTiles = Math.min(...counts);
+  const moreIceIndex = extraTiles === 0 ? -1 : counts[0] > counts[1] ? 0 : 1;
+  differenceText.textContent = extraTiles === 0
+    ? "Same rounded tile count"
+    : `${extraTiles} more tile${extraTiles === 1 ? "" : "s"} in ${scenarioNames[selectedScenarios[moreIceIndex]]} (${moreIceIndex === 0 ? "left" : "right"})`;
+  differenceLegend.querySelector("svg").style.display = extraTiles === 0 ? "none" : "";
+  differenceLegend.hidden = false;
   panels.forEach((panel, index) => {
     const {label, svg, areaValue} = panel;
     const scenario = selectedScenarios[index];
-    const area = byYear.get(scenario).get(year).area;
-    const count = Math.round(area / tileArea);
+    const area = areas[index];
+    const count = counts[index];
+
     if (!panel.initialized) {
       panel.tiles = svg.selectAll("polygon").data(floe).join("polygon")
         .attr("points", hex).attr("transform", d => `translate(${d.x},${d.y})`)
-        .attr("fill", d => d3.interpolateRgb("#d5ecee", "#f1f8f7")(0.5 + 0.45 * Math.sin(d.x + d.y)))
-        .attr("stroke", "#d6e9eb").attr("stroke-width", 0.45);
-      anchors.forEach((cell, i) => addBear(svg, cell, i ? 0.58 : 0.78));
+        .attr("fill", d => iceColor(tileShade(d)))
+        .attr("stroke", "#d6e9eb").attr("stroke-width", 0.45)
+        .attr("stroke-linejoin", "round");
+      // anchors.forEach((cell, i) => addBear(svg, cell, i ? 0.58 : 0.78));
+      panel.bears = anchors.map((cell, i) => ({ tileIndex: floe.indexOf(cell), original: addBear(svg, cell, i ? 0.58 : 0.78), ghost: addGhostBear(svg, cell, i ? 0.58 : 0.78), }));
+      
+      panel.changeOutlines = svg.append("g").attr("class", "change-outlines").style("pointer-events", "none");
       panel.initialized = true;
     }
     label.text(pathways.find(d => d[0] === scenario)[1]);
-    panel.tiles.attr("opacity", (d, i) => i < count ? 1 : 0);
+    const previousCount = panel.previousCount;
+    const previousScenario = panel.previousScenario;
+    if (previousCount !== undefined && previousScenario === scenario && count !== previousCount) { 
+      const disappearing = count < previousCount; const changedTiles = floe.slice(
+        Math.min(count, previousCount),
+        Math.max(count, previousCount)
+      );
+      panel.changeOutlines.selectAll("*").remove();
+      panel.changeOutlines.selectAll("polygon").data(changedTiles).join("polygon").attr("points", hex).attr("transform", d => `translate(${d.x},${d.y})`).attr("fill", "none").attr("stroke", disappearing ? "red":"green").attr("stroke-width", 2).attr("stroke-opacity", 0.4).transition().duration(1000).attr("stroke-opacity", 0).remove();
+    }
+    panel.previousCount = count;
+    panel.previousScenario = scenario;
+    const isExtraTile = i => index === moreIceIndex && i >= sharedTiles && i < count;
+    panel.tiles.transition().duration(250)
+      .attr("opacity", (d, i) => i < count ? 1 : 0)
+      .attr("fill", d => iceColor(tileShade(d)))
+      .attr("stroke", (d, i) => isExtraTile(i) ? extraIceStroke : "#d6e9eb")
+      .attr("stroke-width", (d, i) => isExtraTile(i) ? 1.7 : 0.45);
     areaValue.text(d3.format(".3f")(area));
-    svg.attr("aria-label", `${scenario}, September ${year}: ${area.toFixed(3)} million square kilometres of sea ice`);
+    panel.bears.forEach(bear => {
+      const tileExists = bear.tileIndex < count;
+      bear.original.transition().duration(250).attr("opacity", tileExists ? 1 : 0);
+      bear.ghost.transition().duration(250).attr("opacity", tileExists ? 0 : 1);});
+    svg.attr("aria-label", `${scenario}, September ${year}–${endYear}: mean sea-ice area of ${area.toFixed(3)} million square kilometres`);
   });
   matchPanelHeaderHeights();
   updateTemperatureChart();
@@ -283,8 +368,14 @@ function update() {
 yearInput.addEventListener("input", update);
 d3.csv("arctic-temperature.csv", d3.autoType)
   .then(rows => {
-    temperatureRows = rows;
-    temperatureByScenario = d3.group(rows, d => d.scenario);
+    const annualRows = rows.filter(d => d.year >= 2016 && d.year <= 2100);
+    temperatureRows = d3.flatRollup(annualRows,
+      period => d3.mean(period, d => d.anomaly_c),
+      d => d.scenario,
+      d => 2016 + 5 * Math.floor((d.year - 2016) / 5)
+    ).map(([scenario, year, anomaly_c]) => ({scenario, year, anomaly_c}))
+      .sort((a, b) => a.year - b.year);
+    temperatureByScenario = d3.group(temperatureRows, d => d.scenario);
     updateTemperatureChart();
   })
   .catch(error => {
@@ -292,4 +383,6 @@ d3.csv("arctic-temperature.csv", d3.autoType)
     temperatureSvg.append("text").attr("x", 80).attr("y", 80)
       .attr("class", "axis-title").text("Could not load Arctic temperature data.");
   });
-update();
+pathwayChoices.find(choice => choice.value === "ssp126").checked = true;
+pathwayChoices.find(choice => choice.value === "ssp585").checked = true;
+syncPathwayPicker();

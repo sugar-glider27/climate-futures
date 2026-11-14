@@ -128,10 +128,13 @@ let temperatureByScenario = null;
 
 function updateTemperatureChart() {
   if (!temperatureRows || !temperatureByScenario) return;
-  const [minimum, maximum] = d3.extent(temperatureRows, d => d.anomaly_c);
+  const visibleRows = selectedScenarios.length === 2
+    ? selectedScenarios.flatMap(scenario => temperatureByScenario.get(scenario) || [])
+    : temperatureRows;
+  const [minimum, maximum] = d3.extent(visibleRows, d => d.anomaly_c);
+  const padding = (maximum - minimum) * 0.03;
   const yScale = d3.scaleLinear()
-    .domain([Math.min(0, minimum), maximum])
-    .nice(5)
+    .domain([minimum - padding, maximum + padding])
     .range([plotBottom, plotTop]);
   const years = [2015, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100];
 
@@ -281,7 +284,7 @@ function update() {
   updateTemperatureChart();
 }
 yearInput.addEventListener("input", update);
-d3.csv("arctic-temperature.csv", d3.autoType)
+d3.csv("../docs/arctic-temperature.csv", d3.autoType)
   .then(rows => {
     temperatureRows = rows;
     temperatureByScenario = d3.group(rows, d => d.scenario);
