@@ -438,7 +438,7 @@
       <h1>September on the ice</h1>
       <p>
         Compare two emissions pathways. Move through time to see how much
-        sea ice the model projects each September.
+        sea ice the model projects each September in the Arctic (latitude ≥66.5°N).
       </p>
 
 
@@ -507,13 +507,14 @@
         scale and layout. Tile positions are illustrative.
       </p>
 
-      <p class="note">Annual mean near-surface air temperature north of 66.5°N, shown as warming relative to each pathway’s 2015–2024 average.</p>
-      <p class="note">Area-weighted from monthly CMIP6 tas data for CNRM-CM6-1, ensemble member r1i1p1f2.</p>
+      <p class="note">Both displays use grid cells at latitude ≥66.5°N. Sea-ice panels show five-year means of September area, calculated from monthly CMIP6 sea-ice concentration (siconc) × ocean grid-cell area (areacello), summed over this Arctic region.</p>
+      <p class="note">Annual mean near-surface air temperature for the same Arctic region, shown as warming relative to each pathway’s 2015–2024 average.</p>
+      <p class="note">Sea ice and temperature: CNRM-CM6-1, ensemble member r1i1p1f2, under SSP1-2.6, SSP2-4.5, and SSP5-8.5. Temperature is area-weighted from monthly CMIP6 tas data.</p>
       </div>
     </main>
 
     <script src="d3.min.js"></script>
-  <script src="climate-data.js"></script>
-  <script src="ice-floes-v4v4.js?v=2"></script>
+  <script src="arctic-ice-data.js"></script>
+  <script src="ice-floes-v4v4.js?v=3"></script>
 </body>
 </html>

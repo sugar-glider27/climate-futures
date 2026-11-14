@@ -1,4 +1,4 @@
-const records = climateData.ice.filter(row => row.month === 9);
+const records = arcticIceData.ice.filter(row => row.month === 9);
 const byYear = d3.index(records, d => d.scenario, d => d.year);
 const pathways = [
   ["ssp126", "SSP1-2.6 · lower emissions"],
