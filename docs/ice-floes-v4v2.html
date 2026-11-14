@@ -120,22 +120,6 @@
         border-radius: 14px;
       }
 
-      .year-range {
-        display: flex;
-        justify-content: space-between;
-        color: #426671;
-        font-size: 13px;
-        margin-bottom: 2px;
-      }
-
-      .year-control input {
-        display: block;
-        width: 100%;
-        margin: 0;
-        accent-color: #146e7c;
-        cursor: pointer;
-      }
-
       .year-selected {
         text-align: center;
         color: #426671;
@@ -148,6 +132,26 @@
         font-size: 18px;
         font-weight: bold;
         font-variant-numeric: tabular-nums;
+      }
+
+      .year-slider {
+        display: grid;
+        grid-template-columns: 11% 78% 11%;
+        align-items: center;
+      }
+
+      .year-endpoint {
+        color: #426671;
+        font-size: 13px;
+        text-align: center;
+      }
+
+      .year-control input {
+        grid-column: 2;
+        width: calc(100% + 16px);
+        margin-left: -8px;
+        accent-color: #146e7c;
+        cursor: pointer;
       }
 
       .controls label {
@@ -353,10 +357,14 @@
       <div class="panels"></div>
 
       <div class="year-control">
-        <div class="year-range">
-          <span>2015</span><div class="year-selected"> Years <output for="year">2015 - 2019</output> </div><span>2100</span>
+        <div class="year-selected">
+          Years <output for="year">2015 - 2019</output>
         </div>
-        <input id="year" type="range" min="2015" max="2095" step="5" value="2015" disabled>
+        <div class="year-slider">
+          <span class="year-endpoint">2015</span>
+          <input id="year" type="range" min="2015" max="2100" step="5" value="2015" disabled>
+          <span class="year-endpoint">2100</span>
+        </div>
       </div>
 
       <section class="temperature-plot" aria-labelledby="temperature-title">

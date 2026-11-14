@@ -257,7 +257,10 @@ function updateTemperatureChart() {
 
 function update() {
   const year = Number(yearInput.value);
-  document.querySelector(".year-selected output").textContent = `${year} - ${year + 4}`;
+  const endYear = year === 2100 ? 2100 : year + 4;
+  document.querySelector(".year-selected output").textContent =
+    year === endYear ? `${year}` : `${year} - ${endYear}`;
+  document.querySelector(".year-selected output").textContent = `${year} - ${endYear}`;
   if (!started) {
     panels.forEach(panel => {
       panel.svg.selectAll("*").remove();
@@ -276,7 +279,7 @@ function update() {
     const {label, svg, areaValue} = panel;
     const scenario = selectedScenarios[index];
     const yearData = byYear.get(scenario);
-    const area = d3.mean( d3.range(year, year + 5), y => yearData.get(y)?.area );
+    const area = d3.mean( d3.range(year, endYear + 1), y => yearData.get(y)?.area );
     const count = Math.round(area / tileArea);
 
     if (!panel.initialized) {
@@ -309,7 +312,7 @@ function update() {
       const tileExists = bear.tileIndex < count;
       bear.original.transition().duration(250).attr("opacity", tileExists ? 1 : 0);
       bear.ghost.transition().duration(250).attr("opacity", tileExists ? 0 : 1);});
-    svg.attr("aria-label", `${scenario}, September ${year}–${year + 4}: mean sea-ice area of ${area.toFixed(3)} million square kilometres`);
+    svg.attr("aria-label", `${scenario}, September ${year}–${endYear}: mean sea-ice area of ${area.toFixed(3)} million square kilometres`);
   });
   matchPanelHeaderHeights();
   updateTemperatureChart();
