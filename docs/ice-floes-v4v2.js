@@ -11,6 +11,8 @@ const pathwaySummary = document.querySelector("#pathway-summary");
 const pathwayMenu = document.querySelector(".pathway-menu");
 const selectionStatus = document.querySelector("#selection-status");
 const visualization = document.querySelector("#visualization");
+const differenceLegend = document.querySelector("#ice-difference");
+const differenceText = document.querySelector("#ice-difference-text");
 let selectedScenarios = [];
 let started = false;
 
@@ -58,6 +60,10 @@ const hex = d3.range(6).map(i => {
   const angle = Math.PI * (i / 3 - 0.5);
   return [radius * Math.cos(angle), radius * Math.sin(angle)].join(",");
 }).join(" ");
+
+const iceColor = d3.interpolateRgb("#d5ecee", "#f1f8f7");      // darker blue tiles -> light blue
+const extraIceColor = d3.interpolateRgb("#f0cf82", "#fadfa8"); // darker yellow -> light yellow
+const tileShade = d => 0.5 + 0.45 * Math.sin(d.x + d.y);
 
 function addBear(svg, cell, scale) {
   const bear = svg.append("g").attr("aria-hidden", "true")
@@ -271,21 +277,30 @@ function update() {
       panel.svg.attr("aria-label", "Choose a pathway to show the September sea-ice scene");
       panel.bears = null;
     });
+    differenceLegend.hidden = true;
     matchPanelHeaderHeights();
     updateTemperatureChart();
     return;
   }
+  const areas = selectedScenarios.map(scenario => {
+    const yearData = byYear.get(scenario);
+    return d3.mean(d3.range(year, endYear + 1), y => yearData.get(y)?.area);
+  });
+  const counts = areas.map(area => Math.round(area / tileArea));
+  const extraTiles = Math.max(0, counts[0] - counts[1]);
+  differenceText.textContent =
+    `More sea ice on the left (~${extraTiles} tile${extraTiles === 1 ? "" : "s"})`;
+  differenceLegend.hidden = false;
   panels.forEach((panel, index) => {
     const {label, svg, areaValue} = panel;
     const scenario = selectedScenarios[index];
-    const yearData = byYear.get(scenario);
-    const area = d3.mean( d3.range(year, endYear + 1), y => yearData.get(y)?.area );
-    const count = Math.round(area / tileArea);
+    const area = areas[index];
+    const count = counts[index];
 
     if (!panel.initialized) {
       panel.tiles = svg.selectAll("polygon").data(floe).join("polygon")
         .attr("points", hex).attr("transform", d => `translate(${d.x},${d.y})`)
-        .attr("fill", d => d3.interpolateRgb("#d5ecee", "#f1f8f7")(0.5 + 0.45 * Math.sin(d.x + d.y)))
+        .attr("fill", d => iceColor(tileShade(d)))
         .attr("stroke", "#d6e9eb").attr("stroke-width", 0.45);
       // anchors.forEach((cell, i) => addBear(svg, cell, i ? 0.58 : 0.78));
       panel.bears = anchors.map((cell, i) => ({ tileIndex: floe.indexOf(cell), original: addBear(svg, cell, i ? 0.58 : 0.78), ghost: addGhostBear(svg, cell, i ? 0.58 : 0.78), }));
@@ -306,7 +321,7 @@ function update() {
     }
     panel.previousCount = count;
     panel.previousScenario = scenario;
-    panel.tiles.transition().duration(250).attr("opacity", (d, i) => i < count ? 1 : 0);
+    panel.tiles.transition().duration(250) .attr("opacity", (d, i) => i < count ? 1 : 0) .attr("fill", (d, i) => index === 0 && i >= counts[1] ? extraIceColor(tileShade(d)) : iceColor(tileShade(d)));
     areaValue.text(d3.format(".3f")(area));
     panel.bears.forEach(bear => {
       const tileExists = bear.tileIndex < count;

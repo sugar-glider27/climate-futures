@@ -52,6 +52,27 @@
         color: #426671;
         font-size: 13px;
       }
+      .pathway-hint-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 0 0 8px;
+      }
+      .pathway-hint-row .pathway-hint { margin: 0; }
+      .ice-difference {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 7px;
+        margin: 0;
+        color: #153f4c;
+        font-size: 13px;
+        font-weight: 650;
+        white-space: nowrap;
+      }
+      .ice-difference[hidden] { display: none; }
+      .ice-difference svg { width: 22px; height: 22px; }
       .pathway-controls {
         display: flex;
         align-items: center;
@@ -304,6 +325,7 @@
         .pathway-options { position: static; margin-top: 5px; box-shadow: none; }
         .panel-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
         .controls output { padding-left: 0; }
+        .pathway-hint-row { flex-direction: column; gap: 6px; }
       }
 
       @media (max-width: 460px) {
@@ -339,7 +361,16 @@
 
       <!-- D3 builds one comparison panel per selected pathway here. -->
       <div class="pathway-picker">
-        <p class="pathway-hint">The lower-emissions pathway will appear first. Green tiles signal newly added sea ice, while red tiles signal disappearing sea ice.</p>
+        <div class="pathway-hint-row">
+          <p class="pathway-hint">The lower-emissions pathway appears first. Green tiles: newly added sea ice. Red tiles: disappearing sea ice.</p>
+          <p class="ice-difference" id="ice-difference" hidden>
+            <svg viewBox="-13 -13 26 26" aria-hidden="true">
+              <polygon points="0,-12 10.39,-6 10.39,6 0,12 -10.39,6 -10.39,-6"
+                      fill="#f0cf82" stroke="#d1ae5c" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+            <span id="ice-difference-text"></span>
+          </p>
+        </div>
         <div class="pathway-controls">
           <details class="pathway-menu">
             <summary id="pathway-summary">Choose two pathways</summary>
@@ -352,6 +383,8 @@
           <p id="selection-status" aria-live="polite">Select exactly two pathways.</p>
         </div>
       </div>
+
+
 
       <div id="visualization">
       <div class="panels"></div>
