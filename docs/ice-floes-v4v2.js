@@ -257,7 +257,7 @@ function updateTemperatureChart() {
 
 function update() {
   const year = Number(yearInput.value);
-  document.querySelector("output").textContent = year;
+  document.querySelector(".year-selected output").textContent = `${year} - ${year + 4}`;
   if (!started) {
     panels.forEach(panel => {
       panel.svg.selectAll("*").remove();

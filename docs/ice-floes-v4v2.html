@@ -111,15 +111,43 @@
       .pathway-picker button:disabled { opacity: .65; cursor: default; }
       #visualization[hidden] { display: none; }
 
-      .controls {
-        display: grid;
-        grid-template-columns: calc(11% + 8px) calc(78% - 16px) calc(11% + 8px);
-        align-items: center;
+      .year-control {
+        width: 100%;
         margin: 16px 0;
         padding: 12px 16px;
         background: white;
         border: 1px solid #d1e2e3;
         border-radius: 14px;
+      }
+
+      .year-range {
+        display: flex;
+        justify-content: space-between;
+        color: #426671;
+        font-size: 13px;
+        margin-bottom: 2px;
+      }
+
+      .year-control input {
+        display: block;
+        width: 100%;
+        margin: 0;
+        accent-color: #146e7c;
+        cursor: pointer;
+      }
+
+      .year-selected {
+        text-align: center;
+        color: #426671;
+        font-size: 14px;
+        margin-bottom: 2px;
+      }
+
+      .year-selected output {
+        color: #153f4c;
+        font-size: 18px;
+        font-weight: bold;
+        font-variant-numeric: tabular-nums;
       }
 
       .controls label {
@@ -307,7 +335,7 @@
 
       <!-- D3 builds one comparison panel per selected pathway here. -->
       <div class="pathway-picker">
-        <p class="pathway-hint">The lower-emissions pathway will appear first.</p>
+        <p class="pathway-hint">The lower-emissions pathway will appear first. Green tiles signal newly added sea ice, while red tiles signal disappearing sea ice.</p>
         <div class="pathway-controls">
           <details class="pathway-menu">
             <summary id="pathway-summary">Choose two pathways</summary>
@@ -324,10 +352,11 @@
       <div id="visualization">
       <div class="panels"></div>
 
-      <div class="controls">
-        <label for="year">Year</label>
-        <input id="year" type="range" min="2015" max="2100" step="5" value="2015" disabled>
-        <output for="year"></output>
+      <div class="year-control">
+        <div class="year-range">
+          <span>2015</span><div class="year-selected"> Years <output for="year">2015 - 2019</output> </div><span>2100</span>
+        </div>
+        <input id="year" type="range" min="2015" max="2095" step="5" value="2015" disabled>
       </div>
 
       <section class="temperature-plot" aria-labelledby="temperature-title">
