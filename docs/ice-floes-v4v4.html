@@ -496,8 +496,8 @@
 
       <section class="temperature-plot" aria-labelledby="temperature-title">
         <h2 id="temperature-title">A warmer Arctic means a wider temperature gap</h2>
-        <p class="chart-explainer">Annual temperatures. The shaded band marks the five years shown in the ice panels above.</p>
-        <svg id="temperature-chart" viewBox="0 0 1000 350" role="img" aria-label="Annual Arctic temperature pathways from 2016 to 2100"></svg>
+        <p class="chart-explainer">Annual Arctic warming relative to each pathway’s 2015–2024 average. The shaded band marks the five years shown in the ice panels above.</p>
+        <svg id="temperature-chart" viewBox="0 0 1000 350" role="img" aria-label="Annual Arctic warming pathways from 2016 to 2100"></svg>
       </section>
 
 
@@ -507,14 +507,14 @@
         scale and layout. Tile positions are illustrative.
       </p>
 
-      <p class="note">Both displays use grid cells at latitude ≥66.5°N. Sea-ice panels show five-year means of September area, calculated from monthly CMIP6 sea-ice concentration (siconc) × ocean grid-cell area (areacello), summed over this Arctic region.</p>
+      <p class="note">Both displays select full grid cells whose latitude centers are ≥66.5°N on their respective model grids. Sea-ice panels show five-year means of September area, calculated from monthly CMIP6 sea-ice concentration (siconc) × ocean grid-cell area (areacello), summed over this Arctic region.</p>
       <p class="note">Annual mean near-surface air temperature for the same Arctic region, shown as warming relative to each pathway’s 2015–2024 average.</p>
-      <p class="note">Sea ice and temperature: CNRM-CM6-1, ensemble member r1i1p1f2, under SSP1-2.6, SSP2-4.5, and SSP5-8.5. Temperature is area-weighted from monthly CMIP6 tas data.</p>
+      <p class="note">Sea ice and temperature: CNRM-CM6-1, ensemble member r1i1p1f2, under SSP1-2.6, SSP2-4.5, and SSP5-8.5. Temperature uses published atmospheric grid-cell areas (areacella) and Gregorian month-length weights to average monthly CMIP6 tas data.</p>
       </div>
     </main>
 
     <script src="d3.min.js"></script>
   <script src="arctic-ice-data.js"></script>
-  <script src="ice-floes-v4v4.js?v=3"></script>
+  <script src="ice-floes-v4v4.js?v=5"></script>
 </body>
 </html>

@@ -172,7 +172,12 @@ function updateTemperatureChart() {
   const years = [2016, 2030, 2040, 2050, 2060, 2070, 2080, 2090, 2100];
 
   xAxisGroup.attr("transform", `translate(0,${plotBottom})`)
-    .call(d3.axisBottom(xScale).tickValues(years).tickFormat(d3.format("d")));
+    .call(
+      d3.axisBottom(xScale)
+        .tickValues(years)
+        .tickFormat(d3.format("d"))
+        .tickSizeOuter(0)
+    );
   yAxisGroup
     .attr("transform", `translate(${plotLeft},0)`)
     .call(
@@ -195,7 +200,7 @@ function updateTemperatureChart() {
   if (!started || selectedScenarios.length !== 2) {
     band.attr("d", null);
     periodLabel.attr("display", "none");
-    temperatureSvg.attr("aria-label", "Choose two pathways to compare Arctic temperature from 2016 to 2100");
+    temperatureSvg.attr("aria-label", "Choose two pathways to compare Arctic warming from 2016 to 2100");
     selectedPeriod.attr("display", "none");
     seriesLayer.selectAll("path.series").remove();
     pointsLayer.selectAll("circle").remove();
@@ -281,9 +286,8 @@ function updateTemperatureChart() {
 
   const values = current.map(d => d.value && d.value.anomaly_c);
   if (values.every(Number.isFinite)) {
-    const warmer = values[0] >= values[1] ? 0 : 1;
     const gap = Math.abs(values[0] - values[1]);
-    const label = `${gap.toFixed(1)}°C warmer than ${scenarioNames[current[warmer].scenario]}`;
+    const label = `Warming difference: ${gap.toFixed(1)}°C`;
     const calloutWidth = 218;
     const markerX = xScale(periodMiddle);
     const chartMidpoint = (2016 + 2100) / 2;
@@ -315,7 +319,7 @@ function updateTemperatureChart() {
       .attr("x", calloutX + calloutWidth / 2).attr("y", calloutY + 37)
       .attr("text-anchor", "middle").text(`${year}–${endYear} average`);
   }
-  temperatureSvg.attr("aria-label", `Annual Arctic temperature pathways with ${year} to ${endYear} highlighted. Five-year mean anomalies: ${scenarioNames[series[0].scenario]} ${values[0].toFixed(1)} degrees Celsius and ${scenarioNames[series[1].scenario]} ${values[1].toFixed(1)} degrees Celsius relative to each pathway's 2015 to 2024 average`);
+  temperatureSvg.attr("aria-label", `Annual Arctic warming pathways with ${year} to ${endYear} highlighted. Five-year mean anomalies: ${scenarioNames[series[0].scenario]} ${values[0].toFixed(1)} degrees Celsius and ${scenarioNames[series[1].scenario]} ${values[1].toFixed(1)} degrees Celsius relative to each pathway's 2015 to 2024 average`);
 }
 
 function update() {
@@ -416,7 +420,7 @@ differenceLegend.querySelector("svg").style.display = extraTiles === 0 ? "none" 
   updateTemperatureChart();
 }
 yearInput.addEventListener("input", update);
-d3.csv("arctic-temperature.csv", d3.autoType)
+d3.csv("arctic-temperature-v4v4.csv", d3.autoType)
   .then(rows => {
     temperatureRows = rows.filter(d => d.year >= 2016 && d.year <= 2100);
     temperatureByScenario = d3.group(temperatureRows, d => d.scenario);
