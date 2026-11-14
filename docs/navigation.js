@@ -2,7 +2,6 @@ const pages = [
   ["ice-floes.html", "September ice floes"],
   ["ice-floes-v4.html", "September ice floes · version 4"],
   ["ice-floes-v4v2.html", "September ice floes · version 4.2"],
-  ["ice-floes-v4v3.html", "September ice floes · version 4.3"],
   ["ice-floes-v4v4.html", "September ice floes · version 4.4"],
 ];
 

@@ -56,14 +56,25 @@ for (let row = 0; row < 11; row++) {
 }
 const anchors = cells.filter(d => d.anchor);
 const floe = cells.sort((a, b) => a.edge - b.edge);
-const hex = d3.range(6).map(i => {
+const hexVertices = d3.range(6).map(i => {
   const angle = Math.PI * (i / 3 - 0.5);
-  return [radius * Math.cos(angle), radius * Math.sin(angle)].join(",");
-}).join(" ");
+  return [radius * Math.cos(angle), radius * Math.sin(angle)];
+});
+const hex = hexVertices.map(point => point.join(",")).join(" ");
+const sideMark = (x1, y1, x2, y2) => `M${x1},${y1} L${x2},${y2}`;
+const sideMarksPath = [
+  sideMark(radius * 0.57, -radius * 0.22, radius * 0.8, -radius * 0.42),
+  sideMark(radius * 0.57, radius * 0.25, radius * 0.8, radius * 0.05),
+].join(" ");
 
 const iceColor = d3.interpolateRgb("#d5ecee", "#f1f8f7");      // darker blue tiles -> light blue
 const extraIceStroke = "#58cbd8";
 const tileShade = d => 0.5 + 0.45 * Math.sin(d.x + d.y);
+
+d3.select("#ice-difference svg").append("path")
+  .attr("d", sideMarksPath).attr("fill", "none")
+  .attr("stroke", extraIceStroke).attr("stroke-width", 1.2)
+  .attr("stroke-linecap", "round");
 
 function addBear(svg, cell, scale) {
   const bear = svg.append("g").attr("aria-hidden", "true")
@@ -237,7 +248,7 @@ function updateTemperatureChart() {
     .attr("x2", d => d === 0 ? periodLeft : periodRight)
     .attr("y1", plotTop).attr("y2", plotBottom);
   pointsLayer.selectAll("circle")
-    .data(current.flatMap(item => item.periodRows.map(row => ({
+    .data(current.flatMap(item => item.periodRows.filter(row => row.year === year || row.year === endYear).map(row => ({
       index: item.index, scenario: item.scenario, value: row,
     }))), d => `${d.index}-${d.value.year}`)
     .join("circle")
@@ -274,7 +285,19 @@ function updateTemperatureChart() {
       ? markerX + 13
       : markerX - calloutWidth - 13;
     const calloutX = Math.max(plotLeft + 8, Math.min(preferredX, plotRight - calloutWidth));
-    const calloutY = Math.max(plotTop + 6, Math.min((yScale(values[0]) + yScale(values[1])) / 2 - 78, plotBottom - 54));
+    const calloutLineYs = series.flatMap(item => item.rows
+      .filter(row => xScale(row.year) >= calloutX - 10 && xScale(row.year) <= calloutX + calloutWidth + 10)
+      .map(row => yScale(row.anomaly_c)));
+    const highestLineY = Math.min(...calloutLineYs);
+    const lowestLineY = Math.max(...calloutLineYs);
+    const aboveLinesY = highestLineY - 56;
+    const belowLinesY = lowestLineY + 8;
+    const fallbackY = Math.max(plotTop + 6, Math.min((yScale(values[0]) + yScale(values[1])) / 2 - 78, plotBottom - 54));
+    const calloutY = aboveLinesY >= plotTop + 6
+      ? aboveLinesY
+      : belowLinesY <= plotBottom - 54
+        ? belowLinesY
+        : fallbackY;
     callout.selectAll("*").remove();
     callout.append("rect").attr("x", calloutX).attr("y", calloutY)
       .attr("width", calloutWidth).attr("height", 48).attr("rx", 12)
@@ -333,6 +356,7 @@ function update() {
         .attr("fill", d => iceColor(tileShade(d)))
         .attr("stroke", "#d6e9eb").attr("stroke-width", 0.45)
         .attr("stroke-linejoin", "round");
+      panel.hatches = svg.append("g").attr("class", "extra-ice-hatches").style("pointer-events", "none");
       // anchors.forEach((cell, i) => addBear(svg, cell, i ? 0.58 : 0.78));
       panel.bears = anchors.map((cell, i) => ({ tileIndex: floe.indexOf(cell), original: addBear(svg, cell, i ? 0.58 : 0.78), ghost: addGhostBear(svg, cell, i ? 0.58 : 0.78), }));
       
@@ -358,6 +382,16 @@ function update() {
       .attr("fill", d => iceColor(tileShade(d)))
       .attr("stroke", (d, i) => isExtraTile(i) ? extraIceStroke : "#d6e9eb")
       .attr("stroke-width", (d, i) => isExtraTile(i) ? 1.7 : 0.45);
+    panel.hatches.selectAll("path")
+      .data(index === moreIceIndex ? floe.slice(sharedTiles, count) : [], d => floe.indexOf(d))
+      .join("path")
+      .attr("d", sideMarksPath)
+      .attr("transform", d => `translate(${d.x},${d.y})`)
+      .attr("fill", "none")
+      .attr("stroke", extraIceStroke)
+      .attr("stroke-width", 1.2)
+      .attr("stroke-linecap", "round")
+      .attr("stroke-opacity", 0.9);
     areaValue.text(d3.format(".3f")(area));
     panel.bears.forEach(bear => {
       const tileExists = bear.tileIndex < count;

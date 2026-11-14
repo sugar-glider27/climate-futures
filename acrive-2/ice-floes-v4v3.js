@@ -366,7 +366,7 @@ function update() {
   updateTemperatureChart();
 }
 yearInput.addEventListener("input", update);
-d3.csv("arctic-temperature.csv", d3.autoType)
+d3.csv("../docs/arctic-temperature.csv", d3.autoType)
   .then(rows => {
     const annualRows = rows.filter(d => d.year >= 2016 && d.year <= 2100);
     temperatureRows = d3.flatRollup(annualRows,
