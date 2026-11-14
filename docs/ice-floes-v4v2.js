@@ -74,6 +74,18 @@ function addBear(svg, cell, scale) {
     ].join(" "));
   bear.append("circle").attr("cx", 13).attr("cy", -10).attr("r", 0.75).attr("fill", "#203e49"); // eyes
   bear.append("circle").attr("cx", 17.4).attr("cy", -8.5).attr("r", 1).attr("fill", "#203e49"); // nose
+
+  return bear;
+}
+
+function addGhostBear(svg, cell, scale) {
+  const bear = svg.append("g").attr("aria-hidden", "true")
+    .attr("transform", `translate(${cell.x},${cell.y}) scale(${scale})`)
+    .attr("opacity", 0);
+  bear.append("path") .attr("fill", "#e8f8fa") .attr("fill-opacity", 0.75) .attr("stroke", "#8bbcc5") .attr("stroke-width", 0.9) .attr("stroke-dasharray", "2 1") .attr("d", [ "M-12,-8 Q-13,-15 -5,-16 Q0,-17 4,-13", "L8,-12 Q9,-16 11,-14", "L12,-12 L16,-10 L18,-8 Q17,-6 13,-7 L9,-7", "L8,-1 L5,-1 L5,-6 L3,-1 L1,-1 L1,-6", "L-5,-6 L-6,0 L-9,0 L-9,-6 L-11,-1 L-13,-1", "Z", ].join(" "));
+  bear.append("circle") .attr("cx", 13).attr("cy", -10).attr("r", 0.75) .attr("fill", "#8bbcc5");
+  bear.append("circle") .attr("cx", 17.4).attr("cy", -8.5).attr("r", 1) .attr("fill", "#8bbcc5");
+  return bear;
 }
 
 function createPanel() {
@@ -254,6 +266,7 @@ function update() {
       panel.label.text("Choose a pathway");
       panel.areaValue.text("—");
       panel.svg.attr("aria-label", "Choose a pathway to show the September sea-ice scene");
+      panel.bears = null;
     });
     matchPanelHeaderHeights();
     updateTemperatureChart();
@@ -262,14 +275,18 @@ function update() {
   panels.forEach((panel, index) => {
     const {label, svg, areaValue} = panel;
     const scenario = selectedScenarios[index];
-    const area = byYear.get(scenario).get(year).area;
+    const yearData = byYear.get(scenario);
+    const area = d3.mean( d3.range(year, year + 5), y => yearData.get(y)?.area );
     const count = Math.round(area / tileArea);
+
     if (!panel.initialized) {
       panel.tiles = svg.selectAll("polygon").data(floe).join("polygon")
         .attr("points", hex).attr("transform", d => `translate(${d.x},${d.y})`)
         .attr("fill", d => d3.interpolateRgb("#d5ecee", "#f1f8f7")(0.5 + 0.45 * Math.sin(d.x + d.y)))
         .attr("stroke", "#d6e9eb").attr("stroke-width", 0.45);
-      anchors.forEach((cell, i) => addBear(svg, cell, i ? 0.58 : 0.78));
+      // anchors.forEach((cell, i) => addBear(svg, cell, i ? 0.58 : 0.78));
+      panel.bears = anchors.map((cell, i) => ({ tileIndex: floe.indexOf(cell), original: addBear(svg, cell, i ? 0.58 : 0.78), ghost: addGhostBear(svg, cell, i ? 0.58 : 0.78), }));
+      
       panel.changeOutlines = svg.append("g").attr("class", "change-outlines").style("pointer-events", "none");
       panel.initialized = true;
     }
@@ -288,7 +305,11 @@ function update() {
     panel.previousScenario = scenario;
     panel.tiles.transition().duration(250).attr("opacity", (d, i) => i < count ? 1 : 0);
     areaValue.text(d3.format(".3f")(area));
-    svg.attr("aria-label", `${scenario}, September ${year}: ${area.toFixed(3)} million square kilometres of sea ice`);
+    panel.bears.forEach(bear => {
+      const tileExists = bear.tileIndex < count;
+      bear.original.transition().duration(250).attr("opacity", tileExists ? 1 : 0);
+      bear.ghost.transition().duration(250).attr("opacity", tileExists ? 0 : 1);});
+    svg.attr("aria-label", `${scenario}, September ${year}–${year + 4}: mean sea-ice area of ${area.toFixed(3)} million square kilometres`);
   });
   matchPanelHeaderHeights();
   updateTemperatureChart();
