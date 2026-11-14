@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>September on the ice · version 4.4</title>
+    <title>Arctic Sea Ice in September · version 4.4</title>
     <style>
       * {
         box-sizing: border-box;
@@ -435,10 +435,11 @@
   <nav aria-label="Visualizations"></nav>
   <script src="navigation.js"></script>
     <main>
-      <h1>September on the ice</h1>
+      <h1>Arctic Sea Ice in September</h1>
       <p>
-        Compare two emissions pathways. Move through time to see how much
-        sea ice the model projects each September in the Arctic (latitude ≥66.5°N).
+        Compare two emissions pathways. Move through time to see how the
+        model projects September Arctic sea-ice area to change under each
+        pathway (latitude ≥66.5°N).
       </p>
 
 
@@ -495,16 +496,17 @@
       </div>
 
       <section class="temperature-plot" aria-labelledby="temperature-title">
-        <h2 id="temperature-title">A warmer Arctic means a wider temperature gap</h2>
-        <p class="chart-explainer">Annual Arctic warming relative to each pathway’s 2015–2024 average. The shaded band marks the five years shown in the ice panels above.</p>
+        <h2 id="temperature-title">Arctic temperature change by emissions pathway</h2>
+        <p class="chart-explainer">Annual Arctic temperature change relative to each pathway’s own 2015–2024 mean. The shaded band marks the five years shown in the ice panels above.</p>
         <svg id="temperature-chart" viewBox="0 0 1000 350" role="img" aria-label="Annual Arctic warming pathways from 2016 to 2100"></svg>
       </section>
 
 
 
       <p class="note">
-        One tile represents approximately 50,000 km². Both scenes use the same
-        scale and layout. Tile positions are illustrative.
+        One tile represents approximately 50,000 km². Tile counts are rounded to
+        the nearest tile. Both scenes use the same scale and layout; tile
+        positions are illustrative.
       </p>
 
       <p class="note">Both displays select full grid cells whose latitude centers are ≥66.5°N on their respective model grids. Sea-ice panels show five-year means of September area, calculated from monthly CMIP6 sea-ice concentration (siconc) × ocean grid-cell area (areacello), summed over this Arctic region.</p>
@@ -515,6 +517,6 @@
 
     <script src="d3.min.js"></script>
   <script src="arctic-ice-data.js"></script>
-  <script src="ice-floes-v4v4.js?v=5"></script>
+  <script src="ice-floes-v4v4.js?v=6"></script>
 </body>
 </html>

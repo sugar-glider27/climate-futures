@@ -195,7 +195,7 @@ function updateTemperatureChart() {
     .attr("text-anchor", "middle").text("Year");
   temperatureSvg.append("text").attr("class", "axis-title")
     .attr("transform", `translate(35,${(plotTop + plotBottom) / 2}) rotate(-90)`)
-    .attr("text-anchor", "middle").text("Arctic temperature change (°C)");
+    .attr("text-anchor", "middle").text("Temperature change (°C)");
 
   if (!started || selectedScenarios.length !== 2) {
     band.attr("d", null);

@@ -2,3 +2,5 @@
 .DS_Store
 !docs/arctic-temperature.csv
 .vscode/
+!docs/arctic-temperature-v4v4.csv
+/work/
